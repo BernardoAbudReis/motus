@@ -4,3 +4,6 @@ dev-dist
 *.local
 .DS_Store
 .env
+
+# Referência visual de outro app (fica só no computador, fora do repositório público)
+docs/referencia-*

@@ -44,6 +44,7 @@ O app roda como um serviço só: o `Dockerfile` da raiz compila o `web` e a `api
 Passo a passo, num projeto próprio (separado do BarberNexa):
 
 1. **New Project → Deploy from GitHub repo → `BernardoAbudReis/motus`.** O serviço do app é criado a partir da `main`.
+   O repositório pertence à conta `BernardoAbudReis`. Para o Railway enxergá-lo, o aplicativo **Railway** do GitHub precisa estar instalado nessa conta, com acesso ao `motus`. Quem faz isso é o dono, em GitHub → Settings → Applications. Sem essa instalação, dá para publicar pela CLI: `railway up --service <app> --ci`, a partir de uma cópia limpa da `main`.
 2. **+ New → Database → PostgreSQL**, no mesmo projeto.
 3. Em **Variables** do serviço do app:
 

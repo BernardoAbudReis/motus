@@ -379,6 +379,62 @@
   margin: 0;
 }
 
+/* Canvas dos confetes: cobre a tela, por cima de tudo, sem bloquear toques. */
+.canvas-confetes {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 60;
+}
+
+/* Interruptor (liga/desliga), no lugar do checkbox. */
+.linha-interruptor {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  color: var(--texto);
+  font-size: 0.95rem;
+}
+
+.interruptor {
+  appearance: none;
+  flex-shrink: 0;
+  width: 3.1rem;
+  height: 1.85rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--rapida);
+}
+
+.interruptor::after {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+  background: var(--texto);
+  transition: transform var(--rapida);
+}
+
+.interruptor:checked {
+  background: var(--destaque);
+}
+
+.interruptor:checked::after {
+  transform: translateX(1.25rem);
+  background: var(--destaque-texto);
+}
+
 /* Só a cor escolhida ganha o anel (antes todas pareciam selecionadas). */
 .grade-cores button {
   border: 0;

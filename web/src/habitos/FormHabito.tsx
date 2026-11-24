@@ -3,13 +3,14 @@ import { Folha } from '../components/Folha'
 import { Icone, type NomeIcone } from '../components/Icone'
 import type { Frequencia, Habito, Meta } from '../db'
 import { dataLocal } from '../repo'
-import { CORES_HABITO, ICONES_HABITO, arquivarHabito, atualizarHabito, corDoHabito, criarHabito, excluirHabito, type CamposHabito } from './dados'
+import { CORES_HABITO, ICONES_HABITO, arquivarHabito, atualizarHabito, corDoHabito, criarHabito, excluirHabito, useConclusoes, type CamposHabito } from './dados'
+import { MINIMO_CONCLUSOES, horarioDoLembrete, lembreteDe, minutosParaHorario } from './lembrete'
 import { DIAS_CURTOS, descreverFrequencia, descreverMeta, lerData } from './logica'
 
 const ORDEM_DIAS = [1, 2, 3, 4, 5, 6, 0]
 const LIMITE_NOME = 60
 
-type Painel = 'cor' | 'icone' | 'meta' | 'repeticao' | null
+type Painel = 'cor' | 'icone' | 'meta' | 'repeticao' | 'lembrete' | null
 
 /** Linha de ajuste: ícone à esquerda, rótulo, valor à direita e, se aberta, o painel embaixo. */
 function Linha({
@@ -56,6 +57,12 @@ export function FormHabito({ habito, onFechar }: { habito?: Habito; onFechar: ()
   const [unidade, setUnidade] = useState(habito?.meta.tipo === 'quantidade' ? habito.meta.unidade : 'vezes')
   const [minutos, setMinutos] = useState(habito?.meta.tipo === 'tempo' ? habito.meta.alvoMin : 30)
   const [inicio, setInicio] = useState(() => (habito ? dataLocal(new Date(habito.criadoEm)) : hoje))
+  const lembreteInicial = lembreteDe(habito ?? {})
+  const [lembreteAtivo, setLembreteAtivo] = useState(lembreteInicial.ativo)
+  const [modoLembrete, setModoLembrete] = useState(lembreteInicial.modo)
+  const [horarioLembrete, setHorarioLembrete] = useState(lembreteInicial.horario)
+  const conclusoes = useConclusoes(habito?.id)
+  const previsto = horarioDoLembrete({ lembrete: { ativo: lembreteAtivo, modo: modoLembrete, horario: horarioLembrete } }, conclusoes)
   const [painel, setPainel] = useState<Painel>(habito ? null : 'icone')
   const [erro, setErro] = useState('')
 
@@ -75,7 +82,14 @@ export function FormHabito({ habito, onFechar }: { habito?: Habito; onFechar: ()
     if (tipoMeta === 'quantidade' && !(quantidade > 0)) return setErro('A meta precisa ser maior que zero.')
     if (tipoMeta === 'tempo' && !(minutos > 0)) return setErro('O tempo precisa ser maior que zero.')
 
-    const campos: CamposHabito = { nome: nome.trim(), icone: icone.trim() || '✅', cor, frequencia, meta }
+    const campos: CamposHabito = {
+      nome: nome.trim(),
+      icone: icone.trim() || '✅',
+      cor,
+      frequencia,
+      meta,
+      lembrete: { ativo: lembreteAtivo, modo: modoLembrete, horario: horarioLembrete },
+    }
     // "Começa em" define a partir de quando o hábito conta nas estatísticas.
     const criadoEm = lerData(inicio > hoje ? hoje : inicio).getTime()
     if (habito) await atualizarHabito(habito.id, { ...campos, criadoEm })
@@ -225,6 +239,43 @@ export function FormHabito({ habito, onFechar }: { habito?: Habito; onFechar: ()
               <input type="date" className="campo-data" value={inicio} max={hoje} onChange={(e) => e.target.value && setInicio(e.target.value)} />
             </label>
           </div>
+          <Linha
+            icone="sino"
+            rotulo="Lembrete"
+            valor={!lembreteAtivo ? 'Desligado' : modoLembrete === 'auto' ? `Automático · ${minutosParaHorario(previsto.minutos)}` : horarioLembrete}
+            aberta={painel === 'lembrete'}
+            onAlternar={() => alternar('lembrete')}
+          >
+            <label className="linha-interruptor">
+              <span>Avisar quando ainda não tiver feito</span>
+              <input type="checkbox" role="switch" className="interruptor" checked={lembreteAtivo} onChange={(e) => setLembreteAtivo(e.target.checked)} />
+            </label>
+            {lembreteAtivo && (
+              <>
+                <div className="alternador">
+                  <button type="button" className={modoLembrete === 'auto' ? 'ativo' : ''} aria-pressed={modoLembrete === 'auto'} onClick={() => setModoLembrete('auto')}>
+                    Automático
+                  </button>
+                  <button type="button" className={modoLembrete === 'fixo' ? 'ativo' : ''} aria-pressed={modoLembrete === 'fixo'} onClick={() => setModoLembrete('fixo')}>
+                    Horário fixo
+                  </button>
+                </div>
+                {modoLembrete === 'auto' && (
+                  <p className="sutil">
+                    {previsto.origem === 'media'
+                      ? `Você costuma concluir por volta das ${minutosParaHorario(previsto.minutos)} (média das últimas ${previsto.amostras} vezes). O horário se ajusta sozinho.`
+                      : `Ainda não há conclusões suficientes para calcular a média (${previsto.amostras} de ${MINIMO_CONCLUSOES}). Até lá, o aviso vem no horário abaixo.`}
+                  </p>
+                )}
+                {(modoLembrete === 'fixo' || previsto.origem !== 'media') && (
+                  <label className="rotulo-inline">
+                    {modoLembrete === 'fixo' ? 'Avisar às' : 'Horário até ter a média'}
+                    <input type="time" className="campo-data" value={horarioLembrete} onChange={(e) => e.target.value && setHorarioLembrete(e.target.value)} />
+                  </label>
+                )}
+              </>
+            )}
+          </Linha>
         </div>
 
         {erro && <p className="erro">{erro}</p>}

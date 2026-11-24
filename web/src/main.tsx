@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from './App'
 import { pedirArmazenamentoPersistente } from './db'
 import { capturarEventoInstalacao } from './instalacao'
+import { renovarInscricao } from './notificacoes'
 import { iniciarSincronizacaoAutomatica } from './sync'
 import './estilos.css'
 import './habitos.css'
@@ -14,6 +15,7 @@ import './estatisticas.css'
 capturarEventoInstalacao()
 void pedirArmazenamentoPersistente()
 iniciarSincronizacaoAutomatica()
+setTimeout(() => void renovarInscricao(), 3000)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

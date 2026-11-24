@@ -4,6 +4,7 @@ import { IndicadorSync } from './components/IndicadorSync'
 import { NavInferior, type Aba } from './components/NavInferior'
 import { BannerInstalacao } from './components/OrientacaoInstalacao'
 import { BarraCronometro } from './habitos/BarraCronometro'
+import { Confetes } from './habitos/Confetes'
 import { useCronometro } from './habitos/cronometro'
 import { usePreferencias } from './preferencias'
 import { Academia } from './pages/Academia'
@@ -50,6 +51,7 @@ export function App() {
         {aba === 'configuracoes' && <Configuracoes />}
       </main>
       <BarraCronometro />
+      <Confetes />
       <AvisoAtualizacao />
       <NavInferior aba={aba} onTrocar={trocar} />
     </div>

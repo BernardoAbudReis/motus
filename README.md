@@ -23,6 +23,12 @@ Sistema web instalável (PWA) para hábitos pessoais e treinos de academia. Func
 4. As exclusões são lógicas (`deletedAt`), para chegarem também aos outros aparelhos.
 5. O treino realizado guarda uma **cópia** dos nomes e da configuração da ficha. Editar a ficha depois não altera o histórico.
 
+## Lembretes
+
+- Cada conclusão feita no próprio dia grava a hora (`concluidoEm`). O lembrete automático toca na média circular das últimas 20 conclusões; com menos de 3, usa o horário padrão do hábito. Também dá para escolher horário fixo ou desligar, por hábito.
+- O navegador não agenda notificações com o app fechado. Por isso o servidor verifica a cada minuto (`api/src/lembretes.ts`), no fuso do aparelho, e envia por Web Push só para hábitos agendados no dia e ainda não concluídos, no máximo um por hábito por dia.
+- É preciso estar com a conta conectada. No iPhone, só funciona com o app instalado na tela de início (iOS 16.4 ou mais novo).
+
 ## Rodar localmente
 
 ```bash
@@ -53,6 +59,8 @@ Passo a passo, num projeto próprio (separado do BarberNexa):
    | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (referência ao banco do projeto) |
    | `JWT_SECRET` | valor aleatório de 64 caracteres, ex.: `openssl rand -hex 32` |
    | `NODE_ENV` | `production` (o Dockerfile já define; pode repetir) |
+   | `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` | par de chaves dos lembretes (Web Push). Gere com `npx web-push generate-vapid-keys`; sem elas, os lembretes ficam desligados e o resto funciona |
+   | `VAPID_SUBJECT` (opcional) | contato `https:` ou `mailto:` para os serviços de push. No Railway, o padrão é o domínio público do serviço |
 
 4. **Settings → Networking → Generate Domain** para ter o endereço `*.up.railway.app` com HTTPS. O domínio próprio é opcional.
 5. Conferir `https://<endereço>/api/saude`: a resposta deve ser `{"ok":true}`.

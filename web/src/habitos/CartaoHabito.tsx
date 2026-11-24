@@ -94,6 +94,7 @@ export function CartaoHabito({
   return (
     <article
       className={`cartao-habito ${feito ? 'feito' : ''} ${h.arquivado ? 'arquivado' : ''} ${foraDoDia ? 'fora-do-dia' : ''}`}
+      data-habito-id={h.id}
       style={{ '--cor': corDoHabito(h.cor), '--fracao': fracao } as CSSProperties}
     >
       <button className="cartao-habito-corpo" onClick={onAbrir} aria-label={`Abrir ${h.nome}`}>

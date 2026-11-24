@@ -54,6 +54,8 @@ export default defineConfig(({ mode }) => ({
         // A API nunca vem do cache: os dados offline ficam no IndexedDB.
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
+        // Recebe os lembretes (Web Push) e abre o app ao tocar na notificação.
+        importScripts: ['/sw-push.js'],
       },
       devOptions: {
         enabled: false,

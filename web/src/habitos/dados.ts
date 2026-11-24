@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, type Habito, type RegistroHabito } from '../db'
-import { alterar, ativos, excluir, novoId, salvar } from '../repo'
+import { alterar, ativos, dataLocal, excluir, novoId, salvar } from '../repo'
 import { concluido, type ValoresPorData } from './logica'
 
 /**
@@ -28,7 +28,7 @@ export const ICONES_HABITO = [
   '🙏', '🎸', '🎨', '🚭', '💰', '🌱', '☀️', '📵', '🧴', '✅',
 ]
 
-export type CamposHabito = Pick<Habito, 'nome' | 'cor' | 'icone' | 'frequencia' | 'meta'>
+export type CamposHabito = Pick<Habito, 'nome' | 'cor' | 'icone' | 'frequencia' | 'meta'> & { lembrete?: Habito['lembrete'] }
 
 export function useHabitos(): Habito[] | undefined {
   return useLiveQuery(async () => ativos(await db.habitos.orderBy('ordem').toArray()), [])
@@ -48,15 +48,55 @@ export function useValores(): Map<string, ValoresPorData> {
   }, [registros])
 }
 
-/** Um registro por hábito por dia: o id fixo evita duplicar entre aparelhos. */
-export function registrar(h: Habito, data: string, valor: number) {
+/** Disparado quando um hábito passa de "não concluído" para "concluído" (confetes, por exemplo). */
+export const EVENTO_CONCLUIDO = 'motus:habito-concluido'
+export interface DetalheConcluido {
+  habitoId: string
+  cor: string
+}
+
+/**
+ * Um registro por hábito por dia: o id fixo evita duplicar entre aparelhos.
+ * Guarda a hora da conclusão quando ela acontece no próprio dia; é com ela que
+ * o lembrete automático aprende o horário em que o hábito costuma ser feito.
+ */
+export async function registrar(h: Habito, data: string, valor: number) {
   const v = Math.max(0, Math.round(valor * 100) / 100)
-  return salvar<RegistroHabito>('registrosHabito', `${h.id}_${data}`, {
+  const id = `${h.id}_${data}`
+  const anterior = await db.registrosHabito.get(id)
+  const jaEstava = !!anterior && anterior.deletedAt === null && anterior.concluido
+  const agora = concluido(h, v)
+  const concluidoEm = !agora ? null : jaEstava ? (anterior.concluidoEm ?? null) : data === dataLocal() ? Date.now() : null
+
+  const registro = await salvar<RegistroHabito>('registrosHabito', id, {
     habitoId: h.id,
     data,
     valor: v,
-    concluido: concluido(h, v),
+    concluido: agora,
+    concluidoEm,
   })
+  if (agora && !jaEstava) {
+    // Fora da transação do Dexie: quem ouve pode mexer na tela à vontade.
+    setTimeout(() =>
+      window.dispatchEvent(new CustomEvent<DetalheConcluido>(EVENTO_CONCLUIDO, { detail: { habitoId: h.id, cor: corDoHabito(h.cor) } })),
+    )
+  }
+  return registro
+}
+
+/** Instantes (ms) em que o hábito foi concluído, para calcular o horário médio. */
+export function useConclusoes(habitoId: string | undefined): number[] {
+  return (
+    useLiveQuery(
+      async () =>
+        habitoId
+          ? (await db.registrosHabito.where('habitoId').equals(habitoId).toArray())
+              .filter((r) => r.deletedAt === null && r.concluido && typeof r.concluidoEm === 'number')
+              .map((r) => r.concluidoEm as number)
+          : [],
+      [habitoId],
+    ) ?? []
+  )
 }
 
 /**

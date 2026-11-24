@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { rotasAuth } from './auth.js'
 import { pool } from './banco.js'
+import { rotasPush } from './push.js'
 import { rotasSync } from './sync.js'
 
 export function criarApp() {
@@ -27,6 +28,7 @@ export function criarApp() {
   })
   app.use('/api/auth', rotasAuth)
   app.use('/api/sync', rotasSync)
+  app.use('/api/push', rotasPush)
   app.use('/api', (_req, res) => void res.status(404).json({ erro: 'Rota não encontrada.' }))
 
   // Em produção, o mesmo serviço entrega o front (web/dist): um endereço só, com HTTPS.

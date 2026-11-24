@@ -26,6 +26,16 @@ export type Meta =
   | { tipo: 'quantidade'; alvo: number; unidade: string }
   | { tipo: 'tempo'; alvoMin: number }
 
+/**
+ * Lembrete do hábito. "auto": avisa na média dos horários em que o hábito foi
+ * concluído (com poucas conclusões, usa `horario`). "fixo": sempre em `horario`.
+ */
+export interface Lembrete {
+  ativo: boolean
+  modo: 'auto' | 'fixo'
+  horario: string // HH:MM
+}
+
 export interface Habito extends Sincronizavel {
   nome: string
   cor: string
@@ -35,6 +45,8 @@ export interface Habito extends Sincronizavel {
   arquivado: boolean
   ordem: number
   criadoEm: number
+  /** Ausente em hábitos antigos: vale o padrão (ativo, automático). */
+  lembrete?: Lembrete
 }
 
 /** Um registro por hábito por dia. id = `${habitoId}_${data}`, então dois aparelhos marcando o mesmo dia não duplicam. */
@@ -43,6 +55,8 @@ export interface RegistroHabito extends Sincronizavel {
   data: string // AAAA-MM-DD, no fuso do usuário
   valor: number // minutos, quantidade ou 1 para check
   concluido: boolean
+  /** Quando foi concluído (ms). Só registrado para conclusões no próprio dia: alimenta o horário do lembrete. */
+  concluidoEm?: number | null
 }
 
 export interface Exercicio extends Sincronizavel {

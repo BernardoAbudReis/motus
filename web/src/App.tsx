@@ -14,12 +14,13 @@ import { Habitos } from './pages/Habitos'
 // Abas carregadas sob demanda: a abertura do app baixa só o necessário para Hábitos.
 // O service worker guarda todos os pedaços, então tudo continua funcionando offline.
 const Academia = lazy(() => import('./pages/Academia').then((m) => ({ default: m.Academia })))
+const Estudos = lazy(() => import('./pages/Estudos').then((m) => ({ default: m.Estudos })))
 const Estatisticas = lazy(() => import('./pages/Estatisticas').then((m) => ({ default: m.Estatisticas })))
 const Configuracoes = lazy(() => import('./pages/Configuracoes').then((m) => ({ default: m.Configuracoes })))
 
 function abaDaUrl(): Aba {
   const h = location.hash.replace('#', '')
-  return h === 'academia' || h === 'estatisticas' || h === 'configuracoes' ? h : 'habitos'
+  return h === 'academia' || h === 'estudos' || h === 'estatisticas' || h === 'configuracoes' ? h : 'habitos'
 }
 
 export function App() {
@@ -65,6 +66,7 @@ export function App() {
         <Suspense fallback={null}>
           {aba === 'habitos' && <Habitos />}
           {aba === 'academia' && <Academia />}
+          {aba === 'estudos' && <Estudos />}
           {aba === 'estatisticas' && <Estatisticas />}
           {aba === 'configuracoes' && <Configuracoes />}
         </Suspense>

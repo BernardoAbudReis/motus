@@ -18,6 +18,11 @@ import {
   Download,
   Dumbbell,
   Flame,
+  GraduationCap,
+  History,
+  RotateCcw,
+  ArrowRight,
+  Layers,
   ListChecks,
   LogOut,
   Minus,
@@ -101,6 +106,11 @@ const ICONES = {
   descricao: AlignLeft,
   ver: Eye,
   ocultar: EyeOff,
+  estudos: GraduationCap,
+  historico: History,
+  revisao: RotateCcw,
+  mover: ArrowRight,
+  setores: Layers,
 } satisfies Record<string, LucideIcon>
 
 export type NomeIcone = keyof typeof ICONES

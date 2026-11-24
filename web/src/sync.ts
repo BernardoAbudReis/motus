@@ -47,10 +47,25 @@ export function ouvirEstadoSync(f: (e: EstadoSync) => void) {
   }
 }
 
-/** Junta várias gravações seguidas numa sincronização só. */
+const ESPERA_MAXIMA_MS = 10_000
+let agendadaDesde: number | null = null
+
+/**
+ * Junta várias gravações seguidas numa sincronização só. Quem usa o app sem
+ * parar não adia o envio para sempre: no máximo 10 s depois da primeira gravação.
+ */
 export function agendarSincronizacao(atrasoMs = 1500) {
+  const agora = Date.now()
+  agendadaDesde ??= agora
   clearTimeout(timer)
-  timer = setTimeout(() => void sincronizar(), atrasoMs)
+  const restante = Math.max(0, ESPERA_MAXIMA_MS - (agora - agendadaDesde))
+  timer = setTimeout(
+    () => {
+      agendadaDesde = null
+      void sincronizar()
+    },
+    Math.min(atrasoMs, restante),
+  )
 }
 
 function separar(registro: Sincronizavel): Mudanca['dados'] {

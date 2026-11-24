@@ -125,6 +125,80 @@ export interface Preferencias extends Sincronizavel {
   lembretes: boolean
 }
 
+/* ---------- Estudos ----------
+ * Setor → Matéria → Conteúdo. O planejamento são as Atividades (estudo ou
+ * revisão num dia); a execução são as Sessões. Progresso, tempo estudado e
+ * resumos são calculados na hora (estudos/logica.ts), nunca guardados.
+ */
+
+export interface Setor extends Sincronizavel {
+  nome: string
+  ordem: number
+  arquivado: boolean
+}
+
+export interface Materia extends Sincronizavel {
+  setorId: string
+  nome: string
+  cor: string // id de CORES_HABITO
+  icone: string // emoji opcional ('' = sem ícone)
+  descricao: string
+  ordem: number
+  arquivada: boolean
+}
+
+export type StatusConteudo = 'pendente' | 'andamento' | 'concluido'
+export type Prioridade = 'baixa' | 'media' | 'alta'
+export type TipoEstudo = 'estudo' | 'revisao'
+
+export interface Conteudo extends Sincronizavel {
+  materiaId: string
+  nome: string
+  descricao: string
+  ordem: number
+  prioridade: Prioridade
+  status: StatusConteudo
+  tempoEstimadoMin: number | null
+  concluidoEm: string | null // AAAA-MM-DD
+  observacoes: string
+}
+
+/** Cada mudança de data fica registrada: o histórico mostra o que foi reagendado. */
+export interface Reagendamento {
+  de: string
+  para: string
+  em: number
+}
+
+/**
+ * Um estudo ou revisão planejado para um dia. Nunca é concluído sozinho:
+ * passou do dia sem ser feito, continua "planejada" (aparece como atrasada).
+ * Remover é lógico (estado "removida"), para o histórico continuar completo.
+ */
+export interface Atividade extends Sincronizavel {
+  conteudoId: string
+  tipo: TipoEstudo
+  data: string // dia atual planejado
+  dataOriginal: string // primeiro dia planejado, preservado ao reagendar
+  ordem: number
+  estado: 'planejada' | 'feita' | 'removida'
+  reagendamentos: Reagendamento[]
+  feitaEm: number | null
+}
+
+export type Dificuldade = 'facil' | 'media' | 'dificil'
+
+/** O que foi de fato estudado ou revisado (com ou sem atividade planejada). */
+export interface SessaoEstudo extends Sincronizavel {
+  conteudoId: string
+  tipo: TipoEstudo
+  data: string
+  minutos: number | null
+  dificuldade: Dificuldade | null
+  observacoes: string
+  atividadeId: string | null
+}
+
 /** Dados só do aparelho (nunca sincronizados): token, cursor de sincronização etc. */
 export interface MetaLocal {
   chave: string
@@ -138,6 +212,11 @@ export const COLECOES = [
   'fichas',
   'sessoes',
   'preferencias',
+  'setores',
+  'materias',
+  'conteudos',
+  'atividades',
+  'sessoesEstudo',
 ] as const
 export type Colecao = (typeof COLECOES)[number]
 
@@ -148,6 +227,11 @@ class BancoLocal extends Dexie {
   fichas!: Table<Ficha, string>
   sessoes!: Table<SessaoTreino, string>
   preferencias!: Table<Preferencias, string>
+  setores!: Table<Setor, string>
+  materias!: Table<Materia, string>
+  conteudos!: Table<Conteudo, string>
+  atividades!: Table<Atividade, string>
+  sessoesEstudo!: Table<SessaoEstudo, string>
   meta!: Table<MetaLocal, string>
 
   constructor() {
@@ -160,6 +244,13 @@ class BancoLocal extends Dexie {
       sessoes: 'id, dirty, fichaId, iniciadaEm',
       preferencias: 'id, dirty',
       meta: 'chave',
+    })
+    this.version(2).stores({
+      setores: 'id, dirty',
+      materias: 'id, dirty, setorId',
+      conteudos: 'id, dirty, materiaId',
+      atividades: 'id, dirty, conteudoId, data',
+      sessoesEstudo: 'id, dirty, conteudoId, data',
     })
   }
 }

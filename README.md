@@ -23,6 +23,14 @@ Sistema web instalável (PWA) para hábitos pessoais e treinos de academia. Func
 4. As exclusões são lógicas (`deletedAt`), para chegarem também aos outros aparelhos.
 5. O treino realizado guarda uma **cópia** dos nomes e da configuração da ficha. Editar a ficha depois não altera o histórico.
 
+## Estudos
+
+- Hierarquia: setor → matéria → conteúdo (`setores`, `materias`, `conteudos`). Quem não separa por setor usa o "Geral", criado sozinho.
+- **Planejamento** são as `atividades`: um estudo ou uma revisão num dia. **Execução** são as `sessoesEstudo`, com tempo, dificuldade e observações opcionais.
+- Nada é concluído nem apagado sozinho. O que passou do dia continua planejado e aparece como atrasado. Reagendar troca a data, mas guarda a `dataOriginal` e cada mudança em `reagendamentos`. Remover marca como "removida", e a atividade continua no histórico.
+- A semana não é um registro: sai das datas (segunda a domingo). Por isso o histórico de qualquer semana é só uma consulta. Progresso, tempo estudado e resumos são calculados na hora (`web/src/estudos/logica.ts`).
+- Revisão é uma atividade do tipo "revisão", independente do status do conteúdo: um conteúdo concluído pode ter revisões pendentes.
+
 ## Lembretes
 
 - Cada conclusão feita no próprio dia grava a hora (`concluidoEm`). O lembrete automático toca na média circular das últimas 20 conclusões; com menos de 3, usa o horário padrão do hábito. Também dá para escolher horário fixo ou desligar, por hábito.

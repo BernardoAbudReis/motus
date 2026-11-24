@@ -113,3 +113,41 @@ test('coleção desconhecida é recusada', async () => {
   const r = await chamar('/sync/push', token, { mudancas: [{ ...habito(1, 'x'), colecao: 'outra' }] })
   assert.equal(r.status, 400)
 })
+
+test('estudos: matéria, conteúdo, atividade e sessão sincronizam; atividade inválida é rejeitada', async () => {
+  const token = await novoUsuario()
+  const t = Date.now() - 10_000
+  const reg = (colecao: string, id: string, dados: Record<string, unknown>) => ({ colecao, id, updatedAt: t, deletedAt: null, dados })
+  const mudancas = [
+    reg('setores', 's1', { nome: 'Geral', ordem: 1, arquivado: false }),
+    reg('materias', 'm1', { setorId: 's1', nome: 'JavaScript', cor: 'limao', icone: '💻', descricao: '', ordem: 1, arquivada: false }),
+    reg('conteudos', 'c1', {
+      materiaId: 'm1',
+      nome: 'Arrays',
+      descricao: '',
+      ordem: 1,
+      prioridade: 'alta',
+      status: 'andamento',
+      tempoEstimadoMin: 60,
+      concluidoEm: null,
+      observacoes: '',
+    }),
+    reg('atividades', 'a1', {
+      conteudoId: 'c1',
+      tipo: 'revisao',
+      data: '2026-11-25',
+      dataOriginal: '2026-11-24',
+      ordem: 0,
+      estado: 'planejada',
+      reagendamentos: [{ de: '2026-11-24', para: '2026-11-25', em: t }],
+      feitaEm: null,
+    }),
+    reg('sessoesEstudo', 'e1', { conteudoId: 'c1', tipo: 'estudo', data: '2026-11-24', minutos: 45, dificuldade: 'media', observacoes: '', atividadeId: null }),
+    // Estado que não existe: rejeitado sem travar o resto.
+    reg('atividades', 'ruim', { conteudoId: 'c1', tipo: 'estudo', data: '2026-11-25', dataOriginal: '2026-11-25', ordem: 0, estado: 'concluida', reagendamentos: [], feitaEm: null }),
+  ]
+  const r = await chamar('/sync/push', token, { mudancas })
+  assert.equal(r.status, 200)
+  const { corpo } = await chamar('/sync/pull?desde=0', token)
+  assert.deepEqual(corpo.mudancas.map((m: { colecao: string }) => m.colecao).sort(), ['atividades', 'conteudos', 'materias', 'sessoesEstudo', 'setores'])
+})

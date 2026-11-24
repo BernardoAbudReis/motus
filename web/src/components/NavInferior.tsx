@@ -1,10 +1,11 @@
 import { Icone, type NomeIcone } from './Icone'
 
-export type Aba = 'habitos' | 'academia' | 'estatisticas' | 'configuracoes'
+export type Aba = 'habitos' | 'academia' | 'estudos' | 'estatisticas' | 'configuracoes'
 
 const ABAS: { id: Aba; rotulo: string; icone: NomeIcone }[] = [
   { id: 'habitos', rotulo: 'Hábitos', icone: 'habitos' },
   { id: 'academia', rotulo: 'Academia', icone: 'academia' },
+  { id: 'estudos', rotulo: 'Estudos', icone: 'estudos' },
   { id: 'estatisticas', rotulo: 'Estatísticas', icone: 'estatisticas' },
   { id: 'configuracoes', rotulo: 'Configurações', icone: 'configuracoes' },
 ]

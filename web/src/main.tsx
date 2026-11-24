@@ -10,6 +10,7 @@ import './habitos.css'
 import './academia.css'
 import './cartoes.css'
 import './estatisticas.css'
+import './estudos.css'
 
 // O evento de instalação pode disparar antes do React montar: captura já.
 capturarEventoInstalacao()

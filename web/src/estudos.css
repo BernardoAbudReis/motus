@@ -1,0 +1,515 @@
+/* ---------- Estudos ----------
+   Cada matéria tem a sua cor (as mesmas dos hábitos); o menta continua sendo
+   o destaque das ações e do progresso geral. */
+
+/* Navegação com cinco abas: rótulos um pouco menores para caber em 360 px. */
+.nav-inferior {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.nav-inferior .nav-icone {
+  width: 3.1rem;
+}
+
+.nav-rotulo {
+  font-size: 0.68rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.alternador.quatro {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.alternador.quatro button {
+  padding: 0.65rem 0.25rem;
+  font-size: 0.9rem;
+}
+
+.alternador.tres {
+  margin-bottom: 0.75rem;
+}
+
+.secao-estudos {
+  margin-bottom: 0.5rem;
+}
+
+.vazio-curto {
+  margin: 0.25rem 0 0.75rem;
+}
+
+.dica {
+  margin: -0.25rem 0 0.6rem;
+}
+
+.rotulo-campo {
+  margin: 0.25rem 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--texto-sutil);
+}
+
+.sutil.bloco,
+.bloco {
+  display: block;
+}
+
+.chips.quebra {
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.chips.rolagem {
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+  scrollbar-width: none;
+}
+
+.linha-botoes.coluna {
+  flex-direction: column;
+  margin: 0.75rem 0;
+}
+
+.linha-botoes.duas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.linha-botoes .botao,
+.linha-botoes.coluna .botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.linha-adicionar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.lista-simples {
+  margin: 0 0 0.75rem;
+  padding-left: 1.1rem;
+  line-height: 1.6;
+  color: var(--texto-sutil);
+  font-size: 0.92rem;
+}
+
+/* ---------- Atividade (estudo ou revisão planejado) ---------- */
+
+.lista-atividades {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.item-atividade {
+  --cor: var(--destaque);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-left: 4px solid var(--cor);
+  border-radius: 0.9rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+}
+
+.check-atividade {
+  flex-shrink: 0;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  border: 2px solid var(--cor);
+  background: none;
+  display: grid;
+  place-items: center;
+  color: var(--destaque-texto);
+  cursor: pointer;
+  transition: background-color var(--rapida);
+}
+
+.item-atividade.feita .check-atividade {
+  background: var(--cor);
+}
+
+.item-atividade-corpo {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0.45rem 0;
+  cursor: pointer;
+}
+
+.item-atividade-corpo strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-atividade-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  color: var(--texto-sutil);
+}
+
+.item-atividade-sub .etiqueta {
+  margin: 0;
+}
+
+.etiqueta.revisao {
+  background: var(--destaque-fundo);
+  color: var(--destaque-forte);
+}
+
+.item-atividade.feita strong {
+  text-decoration: line-through;
+  color: var(--texto-sutil);
+}
+
+.item-atividade.removida {
+  opacity: 0.5;
+  border-style: dashed;
+}
+
+.item-atividade.atrasada {
+  border-color: color-mix(in srgb, var(--aviso) 45%, var(--borda));
+  border-left-color: var(--cor);
+}
+
+.texto-atraso {
+  color: var(--aviso);
+  font-weight: 600;
+}
+
+/* ---------- Hoje ---------- */
+
+.cartao-dia-estudos {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.cartao-dia-estudos > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.cartao-dia-estudos .pct-dia {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--destaque-forte);
+}
+
+.cartao-dia-estudos .barra {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.linha-resumo {
+  margin: -0.5rem 0 0.75rem;
+}
+
+.resumo.quatro {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 420px) {
+  .resumo.quatro {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.proximos-dias {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.proximos-dias li {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.proximos-dias .sutil {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.proximos-dia {
+  font-weight: 600;
+}
+
+/* ---------- Matérias ---------- */
+
+.lista-materias {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .lista-materias {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cartao-materia {
+  --cor: var(--destaque);
+  display: grid;
+  gap: 0.45rem;
+  text-align: left;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+}
+
+.cartao-materia-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cartao-materia-pct {
+  font-weight: 700;
+  color: var(--cor);
+}
+
+[data-tema='claro'] .cartao-materia-pct {
+  color: var(--texto);
+}
+
+.barra-materia {
+  --fracao: 0;
+  --cor: var(--destaque);
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--cor) calc(var(--fracao) * 100%), var(--superficie-2) 0);
+}
+
+.progresso-materia {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.progresso-materia-pct {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.lista-conteudos {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.linha-conteudo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 0.8rem;
+  padding: 0.65rem 0.8rem;
+  cursor: pointer;
+}
+
+.linha-conteudo-nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linha-conteudo .sutil {
+  font-size: 0.8rem;
+}
+
+.linha-conteudo .etiqueta {
+  margin: 0;
+}
+
+.marca-status {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  border: 2px solid var(--borda);
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.linha-conteudo.andamento .marca-status {
+  border-color: var(--aviso);
+  color: var(--aviso);
+}
+
+.linha-conteudo.concluido .marca-status {
+  border-color: var(--destaque);
+  background: var(--destaque);
+  color: var(--destaque-texto);
+}
+
+.lista-setores {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.75rem 0;
+}
+
+.linha-setor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grade-icones.compacta button {
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  color: var(--texto-sutil);
+}
+
+.lista-sessoes-estudo {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lista-sessoes-estudo li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 0.8rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+/* ---------- Semana ---------- */
+
+.navegacao-semana {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pilulas-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.pilulas-dias button {
+  display: grid;
+  justify-items: center;
+  gap: 0.05rem;
+  padding: 0.45rem 0 0.3rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+  font-size: 0.75rem;
+  color: var(--texto-sutil);
+  cursor: pointer;
+}
+
+.pilulas-dias button strong {
+  font-size: 1rem;
+  color: var(--texto);
+}
+
+.pilulas-dias button.hoje {
+  border-color: var(--destaque-forte);
+}
+
+.pilulas-dias button.ativo {
+  background: var(--destaque);
+  border-color: var(--destaque);
+  color: var(--destaque-texto);
+}
+
+.pilulas-dias button.ativo strong {
+  color: var(--destaque-texto);
+}
+
+.pilulas-dias .pontos {
+  height: 0.8rem;
+  line-height: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.grade-semana {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+/* No computador, a semana inteira vira colunas lado a lado. */
+@media (min-width: 1100px) {
+  .estudos:has(.grade-semana) {
+    /* Sem transform: ele prenderia o aviso fixo (position: fixed) dentro da seção. */
+    width: min(1060px, calc(100vw - 2rem));
+    margin-left: calc((100% - min(1060px, 100vw - 2rem)) / 2);
+  }
+
+  .grade-semana {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .grade-semana .dia-planejamento .titulo-secao {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grade-semana .item-atividade-corpo strong {
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1099px) {
+  .grade-semana {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
+  }
+}

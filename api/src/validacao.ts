@@ -102,7 +102,71 @@ const preferencias = z.looseObject({
   lembretes: z.boolean(),
 })
 
-export const ESQUEMAS = { habitos, registrosHabito, exercicios, fichas, sessoes, preferencias } as const
+// Estudos
+const tipoEstudo = z.enum(['estudo', 'revisao'])
+
+const setores = z.looseObject({
+  nome: texto(80),
+  ordem: z.number(),
+  arquivado: z.boolean(),
+})
+
+const materias = z.looseObject({
+  setorId: texto(64),
+  nome: texto(80),
+  cor: texto(40),
+  icone: texto(16),
+  descricao: texto(1000),
+  ordem: z.number(),
+  arquivada: z.boolean(),
+})
+
+const conteudos = z.looseObject({
+  materiaId: texto(64),
+  nome: texto(120),
+  descricao: texto(2000),
+  ordem: z.number(),
+  prioridade: z.enum(['baixa', 'media', 'alta']),
+  status: z.enum(['pendente', 'andamento', 'concluido']),
+  tempoEstimadoMin: z.number().nonnegative().nullable(),
+  concluidoEm: dataISO.nullable(),
+  observacoes: texto(4000),
+})
+
+const atividades = z.looseObject({
+  conteudoId: texto(64),
+  tipo: tipoEstudo,
+  data: dataISO,
+  dataOriginal: dataISO,
+  ordem: z.number(),
+  estado: z.enum(['planejada', 'feita', 'removida']),
+  reagendamentos: z.array(z.looseObject({ de: dataISO, para: dataISO, em: ms })).max(200),
+  feitaEm: ms.nullable(),
+})
+
+const sessoesEstudo = z.looseObject({
+  conteudoId: texto(64),
+  tipo: tipoEstudo,
+  data: dataISO,
+  minutos: z.number().nonnegative().max(24 * 60).nullable(),
+  dificuldade: z.enum(['facil', 'media', 'dificil']).nullable(),
+  observacoes: texto(4000),
+  atividadeId: texto(64).nullable(),
+})
+
+export const ESQUEMAS = {
+  habitos,
+  registrosHabito,
+  exercicios,
+  fichas,
+  sessoes,
+  preferencias,
+  setores,
+  materias,
+  conteudos,
+  atividades,
+  sessoesEstudo,
+} as const
 export type Colecao = keyof typeof ESQUEMAS
 export const COLECOES = Object.keys(ESQUEMAS) as Colecao[]
 

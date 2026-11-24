@@ -37,6 +37,25 @@ cd web && npm install && npm run dev # front em :5173 (encaminha /api para :3333
 - Para testar a instalação no celular pela rede local, use `npm run dev:celular` (HTTPS com certificado autoassinado).
 - `npm run icones` em `web/` gera os ícones de Android, iOS e favicon a partir de `web/public/logo.svg`.
 
-## Publicação (pendente)
+## Publicação no Railway
 
-O serviço é um só: `web` é compilado e a `api` o entrega, com um único endereço HTTPS. Variáveis: `DATABASE_URL`, `JWT_SECRET` (32+ caracteres) e `NODE_ENV=production`. As migrações rodam sozinhas quando a API inicia.
+O app roda como um serviço só: o `Dockerfile` da raiz compila o `web` e a `api`, e a API entrega o front num único endereço HTTPS. O `railway.json` já define o Dockerfile e o healthcheck (`/api/saude`). As migrações rodam sozinhas quando a API inicia.
+
+Passo a passo, num projeto próprio (separado do BarberNexa):
+
+1. **New Project → Deploy from GitHub repo → `BernardoAbudReis/motus`.** O serviço do app é criado a partir da `main`.
+2. **+ New → Database → PostgreSQL**, no mesmo projeto.
+3. Em **Variables** do serviço do app:
+
+   | Variável | Valor |
+   |---|---|
+   | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (referência ao banco do projeto) |
+   | `JWT_SECRET` | valor aleatório de 64 caracteres, ex.: `openssl rand -hex 32` |
+   | `NODE_ENV` | `production` (o Dockerfile já define; pode repetir) |
+
+4. **Settings → Networking → Generate Domain** para ter o endereço `*.up.railway.app` com HTTPS. O domínio próprio é opcional.
+5. Conferir `https://<endereço>/api/saude`: a resposta deve ser `{"ok":true}`.
+
+O `JWT_SECRET` assina os logins: trocar o valor desconecta todos os usuários. Se o banco recusar SSL na rede interna, use `PGSSLMODE=disable`.
+
+Com o repositório ligado no passo 1, cada push na `main` publica uma nova versão. Os usuários recebem o aviso "Nova versão disponível" dentro do app.

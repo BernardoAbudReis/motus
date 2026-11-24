@@ -9,7 +9,16 @@ import { rotasSync } from './sync.js'
 export function criarApp() {
   const app = express()
   app.set('trust proxy', 1) // atrás do proxy HTTPS da hospedagem
-  app.use(helmet())
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          // blob: para reduzir a foto do exercício no aparelho antes de salvar.
+          'img-src': ["'self'", 'data:', 'blob:'],
+        },
+      },
+    }),
+  )
   app.use(express.json({ limit: '5mb' }))
 
   app.get('/api/saude', async (_req, res) => {

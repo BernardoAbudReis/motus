@@ -3,12 +3,13 @@ import pg from 'pg'
 const url = process.env.DATABASE_URL
 if (!url) throw new Error('Defina DATABASE_URL (veja api/.env.example).')
 
-// Bancos gerenciados (Neon, Supabase, Render) exigem SSL; o Postgres local não.
-const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url)
+// Bancos gerenciados costumam exigir SSL; o Postgres local não.
+// PGSSLMODE=disable desliga o SSL quando a rede já é privada.
+const semSsl = /@(localhost|127\.0\.0\.1)[:/]/.test(url) || process.env.PGSSLMODE === 'disable'
 
 export const pool = new pg.Pool({
   connectionString: url,
-  ssl: local ? false : { rejectUnauthorized: false },
+  ssl: semSsl ? false : { rejectUnauthorized: false },
   max: 5,
 })
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { AvisoAtualizacao } from './components/AvisoAtualizacao'
 import { IndicadorSync } from './components/IndicadorSync'
 import { NavInferior, type Aba } from './components/NavInferior'
@@ -7,10 +7,13 @@ import { BarraCronometro } from './habitos/BarraCronometro'
 import { Confetes } from './habitos/Confetes'
 import { useCronometro } from './habitos/cronometro'
 import { usePreferencias } from './preferencias'
-import { Academia } from './pages/Academia'
-import { Configuracoes } from './pages/Configuracoes'
-import { Estatisticas } from './pages/Estatisticas'
 import { Habitos } from './pages/Habitos'
+
+// Abas carregadas sob demanda: a abertura do app baixa só o necessário para Hábitos.
+// O service worker guarda todos os pedaços, então tudo continua funcionando offline.
+const Academia = lazy(() => import('./pages/Academia').then((m) => ({ default: m.Academia })))
+const Estatisticas = lazy(() => import('./pages/Estatisticas').then((m) => ({ default: m.Estatisticas })))
+const Configuracoes = lazy(() => import('./pages/Configuracoes').then((m) => ({ default: m.Configuracoes })))
 
 function abaDaUrl(): Aba {
   const h = location.hash.replace('#', '')
@@ -45,10 +48,12 @@ export function App() {
       <IndicadorSync />
       <BannerInstalacao />
       <main className="conteudo">
-        {aba === 'habitos' && <Habitos />}
-        {aba === 'academia' && <Academia />}
-        {aba === 'estatisticas' && <Estatisticas />}
-        {aba === 'configuracoes' && <Configuracoes />}
+        <Suspense fallback={null}>
+          {aba === 'habitos' && <Habitos />}
+          {aba === 'academia' && <Academia />}
+          {aba === 'estatisticas' && <Estatisticas />}
+          {aba === 'configuracoes' && <Configuracoes />}
+        </Suspense>
       </main>
       <BarraCronometro />
       <Confetes />

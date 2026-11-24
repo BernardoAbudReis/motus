@@ -3,7 +3,7 @@ import { Folha } from '../components/Folha'
 import { Icone, type NomeIcone } from '../components/Icone'
 import type { Frequencia, Habito, Meta } from '../db'
 import { dataLocal } from '../repo'
-import { CORES_HABITO, ICONES_HABITO, arquivarHabito, atualizarHabito, corDoHabito, criarHabito, excluirHabito, useConclusoes, type CamposHabito } from './dados'
+import { CORES_HABITO, ICONES_HABITO, arquivarHabito, atualizarHabito, corDoHabito, criarHabito, tintaDoHabito, excluirHabito, useConclusoes, type CamposHabito } from './dados'
 import { MINIMO_CONCLUSOES, horarioDoLembrete, lembreteDe, minutosParaHorario } from './lembrete'
 import { DIAS_CURTOS, descreverFrequencia, descreverMeta, lerData } from './logica'
 
@@ -117,7 +117,7 @@ export function FormHabito({ habito, onFechar }: { habito?: Habito; onFechar: ()
       }
     >
       <form id="form-habito" className="formulario" onSubmit={enviar}>
-        <div className="previa-habito" style={{ '--cor': corHex } as CSSProperties}>
+        <div className="previa-habito" data-tinta={tintaDoHabito(cor)} style={{ '--cor': corHex } as CSSProperties}>
           <span className="habito-icone" aria-hidden>
             {icone || '✅'}
           </span>

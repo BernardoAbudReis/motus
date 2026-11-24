@@ -8,18 +8,24 @@ import { concluido, type ValoresPorData } from './logica'
  * Cores dos cards. Tons sóbrios que funcionam como fundo escuro tingido.
  * Sem roxo, azul ou dourado, para não competir com o verde menta da marca.
  */
+// tinta: cor do texto sobre o card concluído (todo preenchido) no tema escuro,
+// escolhida pelo maior contraste (WCAG ≥ 4,5:1). No tema claro, sempre escura.
 export const CORES_HABITO = [
-  { id: 'menta', nome: 'Menta', hex: '#53E79F' },
-  { id: 'verde', nome: 'Verde', hex: '#5DBB63' },
-  { id: 'agua', nome: 'Água', hex: '#3CC2AE' },
-  { id: 'vermelho', nome: 'Vermelho', hex: '#E5584F' },
-  { id: 'laranja', nome: 'Laranja', hex: '#E5864E' },
-  { id: 'terra', nome: 'Terra', hex: '#B4876A' },
-  { id: 'grafite', nome: 'Grafite', hex: '#A3A5AA' },
+  { id: 'menta', nome: 'Menta', hex: '#53E79F', tinta: 'escura' },
+  { id: 'verde', nome: 'Verde', hex: '#5DBB63', tinta: 'escura' },
+  { id: 'agua', nome: 'Água', hex: '#3CC2AE', tinta: 'escura' },
+  { id: 'vermelho', nome: 'Vermelho', hex: '#E5584F', tinta: 'clara' },
+  { id: 'laranja', nome: 'Laranja', hex: '#E5864E', tinta: 'escura' },
+  { id: 'terra', nome: 'Terra', hex: '#B4876A', tinta: 'clara' },
+  { id: 'grafite', nome: 'Grafite', hex: '#A3A5AA', tinta: 'escura' },
 ] as const
 
 export function corDoHabito(id: string) {
   return CORES_HABITO.find((c) => c.id === id)?.hex ?? CORES_HABITO[0].hex
+}
+
+export function tintaDoHabito(id: string) {
+  return CORES_HABITO.find((c) => c.id === id)?.tinta ?? 'escura'
 }
 
 export const ICONES_HABITO = [

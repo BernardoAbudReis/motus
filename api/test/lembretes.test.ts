@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { after, before, describe, test } from 'node:test'
 import { generateVAPIDKeys } from 'web-push'
+import { criarApp } from '../src/app.js'
 import { pool } from '../src/banco.js'
 import { configurarPush, enviarParaUsuario, lembretesDevidos, mediaCircular, relogioNoFuso, verificarLembretes, type HabitoDados } from '../src/lembretes.js'
 import { migrar } from '../src/migrar.js'
@@ -100,14 +101,14 @@ describe('agendador e envio', () => {
 
     const { rows } = await pool.query<{ id: string }>(
       `insert into usuarios (email, senha_hash) values ($1, 'x') returning id`,
-      [`lembrete${Date.now()}@teste.local`],
+      [`lembrete${Date.now()}@lembretes.teste.local`],
     )
     usuarioId = rows[0].id
   })
 
   after(async () => {
     servidor.close()
-    await pool.query("delete from usuarios where email like '%@teste.local'")
+    await pool.query("delete from usuarios where email like '%@lembretes.teste.local'")
     await pool.end()
   })
 
@@ -166,5 +167,41 @@ describe('agendador e envio', () => {
       restantes.rows.map((r) => r.endpoint),
       [`https://localhost:${porta}/push/aparelho-1`],
     )
+  })
+
+  test('fim do descanso: agenda, reagenda, cancela e entrega o push', async () => {
+    const servidorApi = criarApp().listen(0)
+    await new Promise((ok) => servidorApi.once('listening', ok))
+    const api = `http://localhost:${(servidorApi.address() as AddressInfo).port}/api`
+    const pedir = (metodo: string, caminho: string, token?: string, corpo?: unknown) =>
+      fetch(api + caminho, {
+        method: metodo,
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: corpo ? JSON.stringify(corpo) : undefined,
+      })
+    const cadastro = await (await pedir('POST', '/auth/cadastro', undefined, { email: `descanso${Date.now()}@lembretes.teste.local`, senha: 'senha-de-teste-1' })).json()
+    const k = chavesDoAparelho()
+    await pool.query('insert into push_inscricoes (endpoint, usuario_id, p256dh, auth, fuso) values ($1, $2, $3, $4, $5)', [
+      `https://localhost:${porta}/push/descanso`,
+      cadastro.usuario.id,
+      k.p256dh,
+      k.auth,
+      FUSO,
+    ])
+    const entregues = () => recebidos.filter((r) => r.url === '/push/descanso').length
+
+    recebidos.length = 0
+    assert.equal((await pedir('POST', '/push/descanso', cadastro.token, { segundos: 1, exercicio: 'Supino' })).status, 200)
+    assert.equal((await pedir('DELETE', '/push/descanso', cadastro.token)).status, 200) // pulou o descanso
+    await new Promise((ok) => setTimeout(ok, 1500))
+    assert.equal(entregues(), 0)
+
+    await pedir('POST', '/push/descanso', cadastro.token, { segundos: 5 })
+    await pedir('POST', '/push/descanso', cadastro.token, { segundos: 1 }) // reagendou (−15s): substitui o anterior
+    await new Promise((ok) => setTimeout(ok, 1800))
+    assert.equal(entregues(), 1)
+    assert.equal((await pedir('POST', '/push/descanso', cadastro.token, { segundos: 0 })).status, 400)
+    await pedir('DELETE', '/push/descanso', cadastro.token)
+    servidorApi.close()
   })
 })

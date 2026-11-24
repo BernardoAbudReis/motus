@@ -36,14 +36,46 @@ export async function requisicao<T>(caminho: string, opcoes: RequestInit = {}): 
   return resposta.json() as Promise<T>
 }
 
-export async function entrar(email: string, senha: string, criarConta: boolean, nome?: string) {
-  const { token, usuario } = await requisicao<{ token: string; usuario: Usuario }>(
-    criarConta ? '/auth/cadastro' : '/auth/login',
-    { method: 'POST', body: JSON.stringify({ email, senha, nome }) },
-  )
+async function guardarSessao(token: string, usuario?: Usuario) {
   await gravarMeta('token', token)
-  await gravarMeta('usuario', usuario)
-  return usuario
+  if (usuario) await gravarMeta('usuario', usuario)
+}
+
+/** Entra ou cria a conta. Ao criar, devolve o código de recuperação (mostrado uma única vez). */
+export async function entrar(email: string, senha: string, criarConta: boolean) {
+  const r = await requisicao<{ token: string; usuario: Usuario; codigoRecuperacao?: string }>(
+    criarConta ? '/auth/cadastro' : '/auth/login',
+    { method: 'POST', body: JSON.stringify({ email, senha }) },
+  )
+  await guardarSessao(r.token, r.usuario)
+  return { usuario: r.usuario, codigoRecuperacao: r.codigoRecuperacao }
+}
+
+/** Esqueci a senha: com o código de recuperação. Devolve o código novo (o antigo deixa de valer). */
+export async function redefinirSenha(email: string, codigo: string, novaSenha: string) {
+  const r = await requisicao<{ token: string; usuario: Usuario; codigoRecuperacao: string }>('/auth/redefinir-senha', {
+    method: 'POST',
+    body: JSON.stringify({ email, codigo, novaSenha }),
+  })
+  await guardarSessao(r.token, r.usuario)
+  return r.codigoRecuperacao
+}
+
+export async function gerarCodigoRecuperacao(senha: string) {
+  const r = await requisicao<{ codigoRecuperacao: string }>('/auth/codigo-recuperacao', { method: 'POST', body: JSON.stringify({ senha }) })
+  return r.codigoRecuperacao
+}
+
+/** Troca a senha. Este aparelho continua conectado; os outros precisam entrar de novo. */
+export async function trocarSenha(senhaAtual: string, novaSenha: string) {
+  const r = await requisicao<{ token: string }>('/auth/trocar-senha', { method: 'POST', body: JSON.stringify({ senhaAtual, novaSenha }) })
+  await guardarSessao(r.token)
+}
+
+/** Exclui a conta no servidor. Os dados deste aparelho continuam aqui. */
+export async function excluirConta(senha: string) {
+  await requisicao('/auth/conta', { method: 'DELETE', body: JSON.stringify({ senha }) })
+  await sair()
 }
 
 export async function sair() {

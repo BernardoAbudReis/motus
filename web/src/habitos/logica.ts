@@ -36,9 +36,21 @@ export function previstoPelaFrequencia(h: Habito, data: string) {
  */
 export function inicioEfetivo(h: Habito, valores?: ValoresPorData) {
   let inicio = inicioDoHabito(h)
-  if (valores) for (const [d, v] of valores) if (v > 0 && d < inicio) inicio = d
+  if (!valores) return inicio
+  // Cache por mapa de valores: as estatísticas pedem o início de cada hábito
+  // para cada dia do período. O mapa é recriado quando os registros mudam,
+  // então o cache se renova sozinho.
+  const chave = `${h.id}|${h.criadoEm}`
+  let porHabito = cacheInicio.get(valores)
+  const guardado = porHabito?.get(chave)
+  if (guardado !== undefined) return guardado
+  for (const [d, v] of valores) if (v > 0 && d < inicio) inicio = d
+  if (!porHabito) cacheInicio.set(valores, (porHabito = new Map()))
+  porHabito.set(chave, inicio)
   return inicio
 }
+
+const cacheInicio = new WeakMap<ValoresPorData, Map<string, string>>()
 
 /** O hábito deveria ser feito nesse dia? Respeita a frequência e o início efetivo. */
 export function agendadoNoDia(h: Habito, data: string, valores?: ValoresPorData) {

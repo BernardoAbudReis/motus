@@ -1,5 +1,5 @@
 import { COLECOES, db, gravarMeta, lerMeta, tabela, type Colecao, type Sincronizavel } from './db'
-import { ErroApi, lerToken, requisicao } from './api'
+import { ErroApi, lerToken, requisicao, sair } from './api'
 
 /**
  * Sincronização com o servidor, em duas etapas:
@@ -121,8 +121,9 @@ export async function sincronizar() {
     definirEstado({ tipo: 'ok', em: Date.now() })
   } catch (e) {
     if (e instanceof ErroApi && e.status === 401) {
-      await gravarMeta('token', null)
-      definirEstado({ tipo: 'erro', mensagem: 'Sessão expirada. Entre novamente.' })
+      // Sessão inválida (senha trocada em outro aparelho, conta excluída...): desconecta de vez.
+      await sair()
+      definirEstado({ tipo: 'erro', mensagem: 'Sua sessão terminou. Entre de novo em Configurações.' })
     } else if (!navigator.onLine || e instanceof TypeError) {
       definirEstado({ tipo: 'offline' }) // falha de rede: tenta de novo quando voltar
     } else {

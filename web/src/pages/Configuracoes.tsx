@@ -1,90 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useState, type FormEvent } from 'react'
-import { entrar, sair, type Usuario } from '../api'
-import { descreverSync, useEstadoSync } from '../components/IndicadorSync'
+import { useState } from 'react'
 import { Icone } from '../components/Icone'
 import { PassosInstalacao } from '../components/OrientacaoInstalacao'
 import { db } from '../db'
+import { Conta } from '../conta/Conta'
+import { Dados } from '../conta/Dados'
+import { Perfil } from '../conta/Perfil'
 import { alterarPreferencias, usePreferencias } from '../preferencias'
-import { sincronizar } from '../sync'
 import { ativarNotificacoes, desativarNotificacoes, enviarTeste, useEstadoNotificacoes } from '../notificacoes'
-
-function Conta() {
-  const usuario = useLiveQuery(
-    async () => ((await db.meta.get('usuario'))?.valor as Usuario | null) ?? null,
-    [],
-  )
-  const estado = useEstadoSync()
-  const [criarConta, setCriarConta] = useState(false)
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
-  const [enviando, setEnviando] = useState(false)
-
-  async function enviar(e: FormEvent) {
-    e.preventDefault()
-    setErro('')
-    setEnviando(true)
-    try {
-      await entrar(email.trim(), senha, criarConta)
-      setSenha('')
-      void sincronizar()
-    } catch (err) {
-      setErro((err as Error).message)
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  if (usuario) {
-    return (
-      <>
-        <p>
-          Conectado como <strong>{usuario.email}</strong>
-        </p>
-        <p className="sutil">{descreverSync(estado)}</p>
-        <div className="linha-botoes">
-          <button className="botao" onClick={() => void sincronizar()}>
-            <Icone nome="sincronizar" tamanho={18} /> Sincronizar agora
-          </button>
-          <button className="botao" onClick={() => void sair()}>
-            <Icone nome="sair" tamanho={18} /> Sair
-          </button>
-        </div>
-      </>
-    )
-  }
-
-  return (
-    <form onSubmit={enviar} className="formulario">
-      <p className="sutil">
-        Sem conta, os dados ficam só neste aparelho. Entre para ter backup e usar em outros aparelhos.
-      </p>
-      <label>
-        E-mail
-        <input type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-      </label>
-      <label>
-        Senha
-        <input
-          type="password"
-          autoComplete={criarConta ? 'new-password' : 'current-password'}
-          required
-          minLength={8}
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-      </label>
-      {erro && <p className="erro">{erro}</p>}
-      <button className="botao primario largo" disabled={enviando}>
-        {criarConta ? 'Criar conta' : 'Entrar'}
-      </button>
-      <button type="button" className="botao-link" onClick={() => setCriarConta(!criarConta)}>
-        {criarConta ? 'Já tenho conta' : 'Criar uma conta'}
-      </button>
-    </form>
-  )
-}
 
 function Notificacoes() {
   const { estado, atualizar } = useEstadoNotificacoes()
@@ -171,14 +94,7 @@ export function Configuracoes() {
 
       <div className="cartao">
         <h2>Perfil</h2>
-        <label>
-          Nome
-          <input
-            value={prefs.nome}
-            placeholder="Como quer ser chamado"
-            onChange={(e) => void alterarPreferencias({ nome: e.target.value })}
-          />
-        </label>
+        <Perfil />
       </div>
 
       <div className="cartao">
@@ -206,6 +122,11 @@ export function Configuracoes() {
       <div className="cartao">
         <h2>Notificações e lembretes</h2>
         <Notificacoes />
+      </div>
+
+      <div className="cartao">
+        <h2>Dados</h2>
+        <Dados />
       </div>
 
       <div className="cartao">

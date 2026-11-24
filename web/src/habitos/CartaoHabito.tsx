@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { Icone, type NomeIcone } from '../components/Icone'
 import type { Habito } from '../db'
 import { formatarDuracao } from './cronometro'
-import { corDoHabito } from './dados'
+import { corDoHabito, tintaDoHabito } from './dados'
 import { concluido, descreverFrequencia, descreverValor, progresso } from './logica'
 
 const RAIO = 25
@@ -95,6 +95,7 @@ export function CartaoHabito({
     <article
       className={`cartao-habito ${feito ? 'feito' : ''} ${h.arquivado ? 'arquivado' : ''} ${foraDoDia ? 'fora-do-dia' : ''}`}
       data-habito-id={h.id}
+      data-tinta={tintaDoHabito(h.cor)}
       style={{ '--cor': corDoHabito(h.cor), '--fracao': fracao } as CSSProperties}
     >
       <button className="cartao-habito-corpo" onClick={onAbrir} aria-label={`Abrir ${h.nome}`}>

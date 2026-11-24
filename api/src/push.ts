@@ -46,6 +46,42 @@ rotasPush.delete('/inscricoes', async (req: RequisicaoAutenticada, res) => {
   res.json({ ok: true })
 })
 
+/**
+ * Fim do descanso entre séries com o app em segundo plano (tela bloqueada):
+ * o navegador congela os cronômetros do app, então o servidor avisa na hora.
+ * Um agendamento por usuário (o novo substitui o anterior); fica só em
+ * memória, porque descansos duram minutos.
+ */
+const descansos = new Map<string, ReturnType<typeof setTimeout>>()
+
+rotasPush.post('/descanso', (req: RequisicaoAutenticada, res) => {
+  if (!pushDisponivel()) return void res.status(503).json({ erro: 'Lembretes indisponíveis no servidor.' })
+  const r = z.object({ segundos: z.number().int().min(1).max(900), exercicio: z.string().max(120).optional() }).safeParse(req.body)
+  if (!r.success) return void res.status(400).json({ erro: 'Descanso inválido.' })
+  const usuarioId = req.usuarioId!
+  clearTimeout(descansos.get(usuarioId))
+  descansos.set(
+    usuarioId,
+    setTimeout(() => {
+      descansos.delete(usuarioId)
+      void enviarParaUsuario(usuarioId, {
+        titulo: 'Descanso terminado',
+        corpo: r.data.exercicio ? `Hora da próxima série de ${r.data.exercicio}.` : 'Hora da próxima série.',
+        tag: 'descanso',
+        url: '/#academia',
+        tipo: 'descanso',
+      })
+    }, r.data.segundos * 1000),
+  )
+  res.json({ ok: true })
+})
+
+rotasPush.delete('/descanso', (req: RequisicaoAutenticada, res) => {
+  clearTimeout(descansos.get(req.usuarioId!))
+  descansos.delete(req.usuarioId!)
+  res.json({ ok: true })
+})
+
 /** Notificação de teste para todos os aparelhos do usuário. */
 rotasPush.post('/teste', async (req: RequisicaoAutenticada, res) => {
   if (!pushDisponivel()) return void res.status(503).json({ erro: 'Lembretes indisponíveis no servidor.' })

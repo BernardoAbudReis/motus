@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import basicSsl from '@vitejs/plugin-basic-ssl'
@@ -7,6 +8,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 // instalação no celular pela rede (o service worker só funciona em HTTPS,
 // exceto em localhost). Em produção, o HTTPS vem da hospedagem.
 export default defineConfig(({ mode }) => ({
+  // Vitest: só os testes de unidade em src/. Os de navegador (e2e/) são do Playwright.
+  test: { include: ['src/**/*.test.ts'] },
   define: {
     __VERSAO_APP__: JSON.stringify(process.env.npm_package_version ?? 'dev'),
   },

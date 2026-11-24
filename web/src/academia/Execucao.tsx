@@ -128,7 +128,7 @@ export function Execucao({
   function alternarConcluida(i: number) {
     const concluir = !ex.series[i].concluida
     void mudarSerie(i, { concluida: concluir })
-    if (concluir) iniciarDescanso(ex.descansoSeg)
+    if (concluir) iniciarDescanso(ex.descansoSeg, ex.nome)
     else pularDescanso()
   }
 

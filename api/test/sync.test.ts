@@ -18,7 +18,7 @@ before(async () => {
 
 after(async () => {
   fechar()
-  await pool.query("delete from usuarios where email like '%@teste.local'")
+  await pool.query("delete from usuarios where email like '%@sync.teste.local'")
   await pool.end()
 })
 
@@ -32,7 +32,7 @@ async function chamar(caminho: string, token?: string, corpo?: unknown) {
 }
 
 async function novoUsuario() {
-  const email = `u${Date.now()}${Math.random().toString(36).slice(2, 6)}@teste.local`
+  const email = `u${Date.now()}${Math.random().toString(36).slice(2, 6)}@sync.teste.local`
   const r = await chamar('/auth/cadastro', undefined, { email, senha: 'senha-de-teste-123' })
   assert.equal(r.status, 201)
   return r.corpo.token as string
@@ -43,7 +43,16 @@ const habito = (updatedAt: number, nome: string, deletedAt: number | null = null
   id: 'habito-1',
   updatedAt,
   deletedAt,
-  dados: { nome },
+  dados: {
+    nome,
+    cor: 'menta',
+    icone: '📖',
+    frequencia: { tipo: 'diaria' },
+    meta: { tipo: 'check' },
+    arquivado: false,
+    ordem: 1,
+    criadoEm: 1,
+  },
 })
 
 test('sem token, a sincronização é recusada', async () => {

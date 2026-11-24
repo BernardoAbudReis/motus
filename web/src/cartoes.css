@@ -93,6 +93,39 @@
   background: color-mix(in srgb, var(--cor) 74%, var(--superficie));
 }
 
+/* Texto sobre o card todo preenchido: tinta com contraste ≥ 4,5:1 para cada cor
+   (escolhida em CORES_HABITO). No tema claro o preenchimento é claro: tinta escura. */
+.cartao-habito.feito,
+.previa-habito {
+  --tinta-cartao: var(--texto);
+}
+
+.cartao-habito.feito[data-tinta="escura"],
+.previa-habito[data-tinta="escura"],
+[data-tema="claro"] .cartao-habito.feito,
+[data-tema="claro"] .previa-habito {
+  --tinta-cartao: #090c15;
+}
+
+.cartao-habito.feito .cartao-habito-corpo,
+.previa-habito,
+.previa-habito .previa-nome {
+  color: var(--tinta-cartao);
+}
+
+.cartao-habito.feito .habito-sub,
+.previa-habito .habito-sub {
+  color: color-mix(in srgb, var(--tinta-cartao) 80%, transparent);
+}
+
+.cartao-habito.feito .contador.sequencia {
+  color: var(--tinta-cartao);
+}
+
+.previa-habito .previa-nome::placeholder {
+  color: color-mix(in srgb, var(--tinta-cartao) 60%, transparent);
+}
+
 .cartao-habito.fora-do-dia {
   opacity: 0.55;
 }

@@ -33,6 +33,24 @@ describe('service worker dos lembretes', () => {
     )
   })
 
+  test('fim do descanso: notifica com o app em segundo plano, mas não com ele aberto na tela', async () => {
+    const dados = { json: () => ({ titulo: 'Descanso terminado', corpo: 'Hora da próxima série.', tag: 'descanso', tipo: 'descanso' }) }
+
+    const fundo = carregarServiceWorker()
+    fundo.self.clients.matchAll.mockResolvedValue([{ visibilityState: 'hidden' }])
+    const e1 = evento({ data: dados })
+    fundo.tratadores.push(e1)
+    await Promise.all(e1.promessas)
+    expect(fundo.self.registration.showNotification).toHaveBeenCalledOnce()
+
+    const frente = carregarServiceWorker()
+    frente.self.clients.matchAll.mockResolvedValue([{ visibilityState: 'visible' }])
+    const e2 = evento({ data: dados })
+    frente.tratadores.push(e2)
+    await Promise.all(e2.promessas)
+    expect(frente.self.registration.showNotification).not.toHaveBeenCalled()
+  })
+
   test('tocar na notificação abre o app quando não há janela aberta', async () => {
     const { tratadores, self } = carregarServiceWorker()
     const e = evento({ notification: { close: vi.fn(), data: { url: '/#habitos' } } })

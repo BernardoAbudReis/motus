@@ -7,3 +7,7 @@ dev-dist
 
 # Referência visual de outro app (fica só no computador, fora do repositório público)
 docs/referencia-*
+
+# Playwright
+test-results/
+playwright-report/

@@ -89,6 +89,17 @@
   opacity: 0.35;
 }
 
+/* No tema claro, o menta puro tem ~1,5:1 contra o branco (abaixo dos 3:1 que
+   marcas de gráfico precisam): usa o menta escurecido da marca. */
+[data-tema="claro"] .grafico-coluna,
+[data-tema="claro"] .grafico-ponto {
+  fill: var(--destaque-forte);
+}
+
+[data-tema="claro"] .grafico-linha {
+  stroke: var(--destaque-forte);
+}
+
 /* Tabela de hábitos com mini barra de consistência na cor de cada hábito. */
 .tabela-habitos {
   margin-top: 1rem;

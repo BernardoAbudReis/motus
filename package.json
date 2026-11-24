@@ -1,0 +1,12 @@
+{
+  "name": "motus",
+  "private": true,
+  "description": "Raiz do repositório: só ferramentas de infraestrutura (configuração do Railway em .railway/railway.ts). O app fica em web/ e api/.",
+  "scripts": {
+    "railway:plano": "railway config plan",
+    "railway:aplicar": "railway config apply"
+  },
+  "devDependencies": {
+    "railway": "^3.17.0"
+  }
+}

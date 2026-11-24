@@ -8,7 +8,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "migrar": "tsx --env-file-if-exists=.env src/migrar.ts",
-    "test": "tsx --env-file-if-exists=.env --test test/*.test.ts"
+    "test": "tsx --env-file-if-exists=.env --import ./test/ambiente.ts --test --test-concurrency=1 test/*.test.ts",
+    "backup": "tsx --env-file-if-exists=.env -e \"import('./src/backup.ts').then(async (m) => { const r = await m.gerarBackup(process.env.BACKUP_DIR ?? 'backups'); console.log(r); (await import('./src/banco.ts')).pool.end() })\"",
+    "restaurar": "tsx --env-file-if-exists=.env src/restaurar.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.0",

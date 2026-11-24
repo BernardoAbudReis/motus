@@ -1,7 +1,7 @@
 {
   "name": "habitos-academia-web",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,8 @@
     "preview:celular": "vite preview --host --mode https",
     "icones": "pwa-assets-generator",
     "test": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@playwright/test": "1.65.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",

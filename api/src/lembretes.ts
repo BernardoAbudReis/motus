@@ -173,7 +173,7 @@ interface Inscricao {
 }
 
 /** Envia para todos os aparelhos do usuário. Inscrições expiradas (404/410) são apagadas (não contam como falha). */
-export async function enviarParaUsuario(usuarioId: string, conteudo: { titulo: string; corpo: string; tag?: string; url?: string }) {
+export async function enviarParaUsuario(usuarioId: string, conteudo: { titulo: string; corpo: string; tag?: string; url?: string; tipo?: string }) {
   const { rows } = await pool.query<Inscricao>('select endpoint, p256dh, auth from push_inscricoes where usuario_id = $1', [usuarioId])
   let enviadas = 0
   let falhas = 0

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { lerToken, requisicao } from '../api'
 
 /**
  * Cronômetro de descanso entre séries. Guarda o horário de término no
@@ -7,6 +8,7 @@ import { useEffect, useState } from 'react'
 interface Descanso {
   fim: number
   total: number
+  exercicio?: string
 }
 
 const CHAVE = 'motus-descanso'
@@ -26,19 +28,42 @@ function gravar(d: Descanso | null) {
   ouvintes.forEach((f) => f())
 }
 
-export function iniciarDescanso(segundos: number) {
-  if (segundos > 0) gravar({ fim: Date.now() + segundos * 1000, total: segundos })
+/**
+ * Com a tela bloqueada o navegador congela este cronômetro: se os lembretes
+ * estiverem ativos, pede ao servidor um push para o fim do descanso.
+ * Sem conta, sem permissão ou sem internet, segue só com o aviso local.
+ */
+async function avisarServidor(d: Descanso | null) {
+  try {
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || !(await lerToken())) return
+    if (!d) return void (await requisicao('/push/descanso', { method: 'DELETE' }))
+    const segundos = Math.round((d.fim - Date.now()) / 1000)
+    if (segundos < 1) return
+    await requisicao('/push/descanso', { method: 'POST', body: JSON.stringify({ segundos: Math.min(segundos, 900), exercicio: d.exercicio }) })
+  } catch {
+    // offline ou servidor sem lembretes: o aviso local continua valendo
+  }
+}
+
+export function iniciarDescanso(segundos: number, exercicio?: string) {
+  if (segundos <= 0) return
+  const d = { fim: Date.now() + segundos * 1000, total: segundos, exercicio }
+  gravar(d)
+  void avisarServidor(d)
 }
 
 export function somarDescanso(segundos: number) {
   const d = ler()
   if (!d) return
-  const fim = Math.max(Date.now(), d.fim + segundos * 1000)
-  gravar({ fim, total: Math.max(1, d.total + segundos) })
+  const novo = { ...d, fim: Math.max(Date.now(), d.fim + segundos * 1000), total: Math.max(1, d.total + segundos) }
+  gravar(novo)
+  void avisarServidor(novo)
 }
 
 export function pularDescanso() {
+  const tinha = ler()
   gravar(null)
+  if (tinha) void avisarServidor(null)
 }
 
 export function useDescanso() {

@@ -2,12 +2,10 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { emTransacao } from './banco.js'
 import { exigirLogin, type RequisicaoAutenticada } from './auth.js'
-
-/** Mesma lista do front (web/src/db.ts). */
-const COLECOES = ['habitos', 'registrosHabito', 'exercicios', 'fichas', 'sessoes', 'preferencias'] as const
+import { COLECOES, validarRegistro, type Colecao } from './validacao.js'
 
 const mudanca = z.object({
-  colecao: z.enum(COLECOES),
+  colecao: z.enum(COLECOES as [Colecao, ...Colecao[]]),
   id: z.string().min(1).max(120),
   updatedAt: z.number().int().nonnegative(),
   deletedAt: z.number().int().nonnegative().nullable(),
@@ -32,11 +30,20 @@ rotasSync.post('/push', async (req: RequisicaoAutenticada, res) => {
   const usuarioId = req.usuarioId!
   // Um relógio adiantado no aparelho não pode fazer a alteração "vencer para sempre".
   const agora = Date.now()
+  // Registro fora do formato é descartado sozinho (o resto do lote é gravado):
+  // um item com defeito não pode travar a sincronização do aparelho.
+  const rejeitados: { colecao: string; id: string; motivo: string }[] = []
+  const validas = r.data.mudancas.filter((m) => {
+    const motivo = validarRegistro(m.colecao, m.id, m.dados)
+    if (motivo) rejeitados.push({ colecao: m.colecao, id: m.id, motivo })
+    return !motivo
+  })
+  if (rejeitados.length) console.warn(`Sync: ${rejeitados.length} registro(s) rejeitado(s)`, rejeitados.slice(0, 3))
 
   await emTransacao(async (c) => {
     // Pushes do mesmo usuário em fila: o seq fica na ordem de gravação e o pull não pula nada.
     await c.query('select pg_advisory_xact_lock(hashtext($1))', [usuarioId])
-    for (const m of r.data.mudancas) {
+    for (const m of validas) {
       const atualizado = Math.min(m.updatedAt, agora)
       await c.query(
         `insert into registros (usuario_id, colecao, id, dados, atualizado_em, excluido_em)
@@ -51,7 +58,7 @@ rotasSync.post('/push', async (req: RequisicaoAutenticada, res) => {
       )
     }
   })
-  res.json({ ok: true })
+  res.json({ ok: true, rejeitados })
 })
 
 /** Devolve o que mudou depois do cursor `desde`, em lotes. */

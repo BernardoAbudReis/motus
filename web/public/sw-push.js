@@ -7,17 +7,24 @@ self.addEventListener('push', (evento) => {
   } catch {
     dados = { corpo: evento.data ? evento.data.text() : '' }
   }
-  evento.waitUntil(
-    self.registration.showNotification(dados.titulo || 'MOTUS', {
-      body: dados.corpo || '',
-      icon: '/pwa-192x192.png',
-      tag: dados.tag,
-      renotify: !!dados.tag,
-      lang: 'pt-BR',
-      data: { url: dados.url || '/#habitos' },
-    }),
-  )
+  evento.waitUntil(mostrar(dados))
 })
+
+async function mostrar(dados) {
+  // Fim do descanso com o app aberto na tela: o próprio app já avisa (vibra).
+  if (dados.tipo === 'descanso') {
+    const janelas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    if (janelas.some((j) => j.visibilityState === 'visible')) return
+  }
+  return self.registration.showNotification(dados.titulo || 'MOTUS', {
+    body: dados.corpo || '',
+    icon: '/pwa-192x192.png',
+    tag: dados.tag,
+    renotify: !!dados.tag,
+    lang: 'pt-BR',
+    data: { url: dados.url || '/#habitos' },
+  })
+}
 
 // Tocar na notificação abre o app (ou traz para frente se já estiver aberto).
 self.addEventListener('notificationclick', (evento) => {

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Símbolo MOTUS redesenhado em vetor a partir de docs/marca/motus-logo-original.png -->
+  <rect width="512" height="512" rx="112" fill="#090C15"/>
+  <g stroke-linejoin="round" stroke-width="10" transform="translate(-14 0)">
+    <!-- traço em Λ -->
+    <path d="M108 341 L200 169 L242 169 L294 248 L270 301 L225 225 L166 341 Z" fill="#F6F5F6" stroke="#F6F5F6"/>
+    <!-- traço ascendente -->
+    <path d="M248 341 L306 341 L399 169 L340 169 Z" fill="#F6F5F6" stroke="#F6F5F6"/>
+    <!-- traço menta -->
+    <path d="M322 341 L357 341 L407 248 L404 194 Z" fill="#53E79F" stroke="#53E79F"/>
+  </g>
+</svg>

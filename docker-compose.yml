@@ -1,0 +1,15 @@
+# PostgreSQL só para desenvolvimento. Porta 15433 para não colidir com outros projetos.
+services:
+  banco:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: habitos
+      POSTGRES_PASSWORD: habitos
+      POSTGRES_DB: habitos
+    ports:
+      - '15433:5432'
+    volumes:
+      - dados:/var/lib/postgresql/data
+
+volumes:
+  dados:

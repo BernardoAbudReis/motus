@@ -1,0 +1,732 @@
+/* ---------- Elementos comuns às telas ---------- */
+
+button {
+  /* Sem o atraso do "toque duplo para zoom": toques rápidos seguidos contam todos. */
+  touch-action: manipulation;
+  transition:
+    background-color var(--rapida),
+    border-color var(--rapida),
+    color var(--rapida),
+    transform var(--rapida),
+    opacity var(--rapida);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+button:disabled {
+  cursor: default;
+}
+
+fieldset {
+  border: 0;
+  margin: 0 0 1rem;
+  padding: 0;
+  min-width: 0;
+}
+
+legend {
+  font-size: 0.9rem;
+  color: var(--texto-sutil);
+  margin-bottom: 0.5rem;
+  padding: 0;
+}
+
+h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--texto-sutil);
+  margin: 0 0 0.75rem;
+}
+
+.topo-pagina {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.topo-pagina h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.botao-redondo {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.botao-redondo.ativo {
+  color: var(--destaque-forte);
+  border-color: var(--destaque-fundo);
+  background: var(--destaque-fundo);
+}
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.botao-link.perigo {
+  color: var(--perigo);
+}
+
+.vazio-titulo {
+  color: var(--texto);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.vazio .botao {
+  margin-top: 1.5rem;
+}
+
+.etiqueta {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  color: var(--texto-sutil);
+  margin: 0.25rem 0 0;
+}
+
+/* ---------- Calendário horizontal ---------- */
+
+.calendario-horizontal {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  margin: 0 -1rem 1rem;
+  padding: 0 1rem;
+}
+
+.calendario-horizontal::-webkit-scrollbar {
+  display: none;
+}
+
+.dia {
+  flex: 0 0 calc((100% - 6 * 0.35rem) / 7);
+  min-width: 2.75rem;
+  scroll-snap-align: center;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 0 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--texto-sutil);
+  cursor: pointer;
+}
+
+.dia-semana {
+  font-size: 0.75rem;
+}
+
+/* O anel em volta do número mostra quanto do dia foi concluído. */
+.dia-numero {
+  --fracao: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--texto);
+  background:
+    radial-gradient(circle closest-side, var(--superficie) calc(100% - 3px), transparent calc(100% - 2.5px)),
+    conic-gradient(var(--destaque) calc(var(--fracao) * 360deg), var(--borda) 0);
+}
+
+.dia-numero[data-completo] {
+  background: var(--destaque-fundo);
+  color: var(--destaque-forte);
+  box-shadow: inset 0 0 0 2px var(--destaque);
+}
+
+.dia.ativo {
+  background: var(--destaque);
+  color: var(--destaque-texto);
+  font-weight: 600;
+}
+
+.dia.ativo .dia-numero {
+  background: rgb(9 12 21 / 0.14);
+  color: var(--destaque-texto);
+  box-shadow: none;
+}
+
+.dia.futuro .dia-numero {
+  background: none;
+  color: var(--texto-sutil);
+  opacity: 0.6;
+}
+
+/* ---------- Resumo do dia, semana e mês ---------- */
+
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.resumo-item {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 0.9rem;
+  padding: 0.7rem 0.8rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.resumo-valor {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.resumo-rotulo {
+  font-size: 0.75rem;
+  color: var(--texto-sutil);
+}
+
+.barra {
+  --fracao: 0;
+  height: 4px;
+  border-radius: 2px;
+  margin-top: 0.4rem;
+  background: linear-gradient(90deg, var(--destaque) calc(var(--fracao) * 100%), var(--borda) 0);
+  transition: background var(--suave);
+}
+
+/* ---------- Cards de hábito ---------- */
+
+.lista-habitos {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cartao-habito {
+  --cor: var(--destaque);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.25rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--cor) 11%, var(--superficie));
+  border: 1px solid color-mix(in srgb, var(--cor) 24%, var(--borda));
+  transition:
+    border-color var(--suave),
+    background-color var(--suave);
+  animation: entrar var(--suave) both;
+}
+
+.cartao-habito.feito {
+  border-color: color-mix(in srgb, var(--cor) 55%, var(--borda));
+}
+
+.cartao-habito.arquivado {
+  opacity: 0.7;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.cartao-habito-corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: none;
+  border: 0;
+  padding: 0.9rem 0 0.9rem 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.habito-icone {
+  font-size: 2rem;
+  line-height: 1;
+  width: 2.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.habito-icone.grande {
+  font-size: 2.75rem;
+  width: 3.25rem;
+}
+
+.habito-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.habito-textos strong {
+  font-size: 1.12rem;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habito-sub {
+  color: var(--texto-sutil);
+  font-size: 0.92rem;
+}
+
+.cronometro-rodando {
+  color: var(--destaque-forte);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.sequencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--destaque-forte);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Botão redondo com anel de progresso, na cor do hábito. */
+.botao-anel {
+  --cor: var(--destaque);
+  position: relative;
+  width: 3.75rem;
+  height: 3.75rem;
+  flex-shrink: 0;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.botao-anel svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.anel-trilha {
+  fill: none;
+  stroke: color-mix(in srgb, var(--cor) 30%, transparent);
+  stroke-width: 5;
+}
+
+.anel-progresso {
+  fill: none;
+  stroke: var(--cor);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--suave);
+}
+
+.anel-icone {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.botao-anel.feito .anel-trilha {
+  fill: var(--cor);
+}
+
+.botao-anel.feito {
+  color: var(--fundo);
+}
+
+/* ---------- Folha (painel que sobe) ---------- */
+
+.folha-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgb(0 0 0 / 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: aparecer var(--suave) both;
+}
+
+.folha {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-bottom: 0;
+  border-radius: 1.5rem 1.5rem 0 0;
+  animation: subir var(--suave) both;
+}
+
+@media (min-width: 768px) {
+  .folha-fundo {
+    align-items: center;
+  }
+
+  .folha {
+    border-bottom: 1px solid var(--borda);
+    border-radius: 1.5rem;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes subir {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+.folha-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0.75rem 0.5rem 1.25rem;
+}
+
+.folha-topo h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.folha-corpo {
+  overflow-y: auto;
+  padding: 0.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+
+.secao {
+  margin: 1.5rem 0;
+}
+
+/* ---------- Formulário de hábito ---------- */
+
+.previa-habito {
+  --cor: var(--destaque);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--cor) 11%, var(--superficie));
+  border: 1px solid color-mix(in srgb, var(--cor) 24%, var(--borda));
+  font-size: 1.1rem;
+  transition:
+    background-color var(--suave),
+    border-color var(--suave);
+}
+
+.grade-icones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.grade-icones button {
+  aspect-ratio: 1;
+  font-size: 1.4rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  background: var(--superficie);
+  cursor: pointer;
+}
+
+.grade-icones button.ativo {
+  border-color: var(--destaque);
+  background: var(--destaque-fundo);
+}
+
+.rotulo-inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.campo-emoji {
+  width: 4.5rem;
+  text-align: center;
+  font-size: 1.3rem;
+  padding: 0.4rem;
+}
+
+.grade-cores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.grade-cores button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: var(--cor);
+  box-shadow: inset 0 0 0 3px var(--fundo);
+  cursor: pointer;
+}
+
+.grade-cores button.ativo {
+  border-color: var(--cor);
+}
+
+.alternador.tres {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.alternador button.ativo {
+  background: var(--destaque-fundo);
+  color: var(--destaque-forte);
+}
+
+.grade-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+}
+
+.grade-dias button {
+  padding: 0.6rem 0;
+  border-radius: 0.7rem;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.grade-dias button.ativo {
+  background: var(--destaque);
+  border-color: var(--destaque);
+  color: var(--destaque-texto);
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+}
+
+.linha-campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.alternador + label {
+  margin-top: 0.75rem;
+}
+
+/* ---------- Detalhe do hábito ---------- */
+
+.detalhe-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.detalhe-cabecalho p {
+  margin: 0;
+}
+
+.grade-estatisticas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.grade-estatisticas div {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 0.9rem;
+  padding: 0.75rem 0.9rem;
+  display: grid;
+}
+
+.grade-estatisticas strong {
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.grade-estatisticas span {
+  font-size: 0.8rem;
+  color: var(--texto-sutil);
+}
+
+.passador {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr 3.25rem;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.passador .botao {
+  height: 3.25rem;
+  padding: 0;
+}
+
+.passador-valor {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  margin: 0;
+  gap: 0.35rem;
+}
+
+.passador-valor input {
+  width: 4.5ch;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.4rem;
+  background: none;
+  border-color: transparent;
+}
+
+.secao > .botao.largo {
+  margin-top: 0.5rem;
+}
+
+.calendario-mes {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+  padding: 0.6rem 0.75rem 0.9rem;
+}
+
+.calendario-mes-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.calendario-mes-grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.calendario-mes-cabecalho {
+  font-size: 0.72rem;
+  color: var(--texto-sutil);
+  padding-bottom: 0.25rem;
+}
+
+.dia-mes {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 0;
+  background: none;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.dia-mes.feito {
+  background: var(--destaque);
+  color: var(--destaque-texto);
+  font-weight: 700;
+}
+
+.dia-mes.parcial {
+  background: var(--destaque-fundo);
+  color: var(--destaque-forte);
+}
+
+.dia-mes.perdido {
+  box-shadow: inset 0 0 0 1.5px var(--borda);
+  color: var(--texto-sutil);
+}
+
+.dia-mes.fora,
+.dia-mes.futuro {
+  color: var(--texto-sutil);
+  opacity: 0.45;
+}
+
+.dia-mes.selecionado {
+  outline: 2px solid var(--texto);
+  outline-offset: 1px;
+}
+
+.legenda {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--texto-sutil);
+}
+
+.legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legenda i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+}
+
+.legenda i.feito {
+  background: var(--destaque);
+}
+
+.legenda i.parcial {
+  background: var(--destaque-fundo);
+}
+
+.legenda i.perdido {
+  box-shadow: inset 0 0 0 1.5px var(--borda);
+}

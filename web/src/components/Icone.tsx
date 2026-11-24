@@ -1,4 +1,5 @@
 import {
+  AlignLeft,
   Archive,
   ArchiveRestore,
   ChartColumn,
@@ -8,9 +9,12 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  CalendarDays,
   CircleCheck,
   Clock,
   Copy,
+  Eye,
+  EyeOff,
   Download,
   Dumbbell,
   Flame,
@@ -18,15 +22,20 @@ import {
   LogOut,
   Minus,
   Moon,
+  Palette,
   Pause,
   Pencil,
   Play,
   Plus,
   RefreshCw,
+  Repeat,
   Search,
   Settings,
   Share,
+  Smile,
+  Square,
   Sun,
+  Target,
   Timer,
   Trash2,
   X,
@@ -71,12 +80,21 @@ const ICONES = {
   sair: LogOut,
   lua: Moon,
   sol: Sun,
+  parar: Square,
+  paleta: Palette,
+  sorriso: Smile,
+  alvo: Target,
+  repetir: Repeat,
+  calendario: CalendarDays,
+  descricao: AlignLeft,
+  ver: Eye,
+  ocultar: EyeOff,
 } satisfies Record<string, LucideIcon>
 
 export type NomeIcone = keyof typeof ICONES
 
 /** Ícones que leem melhor preenchidos (forma sólida em vez de contorno). */
-const SOLIDOS = new Set<NomeIcone>(['play', 'pausa'])
+const SOLIDOS = new Set<NomeIcone>(['play', 'pausa', 'parar'])
 
 export function Icone({
   nome,

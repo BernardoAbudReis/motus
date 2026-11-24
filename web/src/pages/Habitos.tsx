@@ -10,6 +10,7 @@ import {
   DIAS_CURTOS,
   previstoPelaFrequencia,
   contarPeriodo,
+  diasSemFazer,
   inicioDaSemana,
   inicioDoMes,
   lerData,
@@ -120,6 +121,7 @@ export function Habitos() {
   const hoje = useHoje()
   const [dia, setDia] = useState(hoje)
   const [verArquivados, setVerArquivados] = useState(false)
+  const [mostrarTodos, setMostrarTodos] = useState(() => localStorage.getItem('motus-mostrar-todos') === '1')
   const [form, setForm] = useState<{ habito?: Habito } | null>(null)
   const [abertoId, setAbertoId] = useState<string | null>(null)
   const habitos = useHabitos()
@@ -138,7 +140,10 @@ export function Habitos() {
 
   const ativos = habitos.filter((h) => !h.arquivado)
   const arquivados = habitos.filter((h) => h.arquivado)
-  const lista = verArquivados ? arquivados : ativos.filter((h) => previstoPelaFrequencia(h, dia))
+  // Agendados do dia primeiro; com "mostrar todos", os demais vêm depois, esmaecidos.
+  const doDia = ativos.filter((h) => previstoPelaFrequencia(h, dia))
+  const foraDoDia = mostrarTodos ? ativos.filter((h) => !previstoPelaFrequencia(h, dia)) : []
+  const lista = verArquivados ? arquivados : [...doDia, ...foraDoDia]
   const vazio = (h: Habito) => valores.get(h.id) ?? new Map<string, number>()
   const aberto = habitos.find((h) => h.id === abertoId)
 
@@ -158,14 +163,28 @@ export function Habitos() {
   return (
     <section>
       <header className="topo-pagina">
-        <button
-          className={`botao-redondo ${verArquivados ? 'ativo' : ''}`}
-          aria-label={verArquivados ? 'Voltar para os hábitos' : 'Ver arquivados'}
-          aria-pressed={verArquivados}
-          onClick={() => setVerArquivados(!verArquivados)}
-        >
-          <Icone nome={verArquivados ? 'voltar' : 'arquivo'} tamanho={20} />
-        </button>
+        <div className="grupo-botoes">
+          <button
+            className={verArquivados ? 'ativo' : ''}
+            aria-label={verArquivados ? 'Voltar para os hábitos' : 'Ver arquivados'}
+            aria-pressed={verArquivados}
+            onClick={() => setVerArquivados(!verArquivados)}
+          >
+            <Icone nome={verArquivados ? 'voltar' : 'arquivo'} tamanho={20} />
+          </button>
+          <button
+            className={mostrarTodos ? 'ativo' : ''}
+            aria-label={mostrarTodos ? 'Mostrar só os agendados do dia' : 'Mostrar todos os hábitos'}
+            aria-pressed={mostrarTodos}
+            disabled={verArquivados}
+            onClick={() => {
+              localStorage.setItem('motus-mostrar-todos', mostrarTodos ? '0' : '1')
+              setMostrarTodos(!mostrarTodos)
+            }}
+          >
+            <Icone nome={mostrarTodos ? 'ver' : 'ocultar'} tamanho={20} />
+          </button>
+        </div>
         <h1>{verArquivados ? 'Arquivados' : tituloDoDia(dia, hoje)}</h1>
         <button className="botao-redondo" aria-label="Novo hábito" onClick={() => setForm({})}>
           <Icone nome="mais" tamanho={22} />
@@ -187,6 +206,8 @@ export function Habitos() {
               habito={h}
               valor={vazio(h).get(dia) ?? 0}
               sequencia={sequenciaAtual(h, vazio(h), dia)}
+              semFazer={diasSemFazer(h, vazio(h), dia)}
+              foraDoDia={!verArquivados && !previstoPelaFrequencia(h, dia)}
               cronometroSeg={cron?.habitoId === h.id ? segundos : null}
               onAcao={() => acao(h)}
               onAbrir={() => setAbertoId(h.id)}

@@ -8,6 +8,7 @@ import { concluido, descreverFrequencia, descreverValor, progresso } from './log
 const RAIO = 25
 const CIRCUNFERENCIA = 2 * Math.PI * RAIO
 
+/** Botão redondo com anel de progresso. Concluído: círculo claro com o check na cor do hábito. */
 export function BotaoAnel({
   cor,
   fracao,
@@ -23,6 +24,7 @@ export function BotaoAnel({
   rotulo: string
   onClick: () => void
 }) {
+  const solido = icone === 'play' || icone === 'pausa' || icone === 'parar'
   return (
     <button
       className={`botao-anel ${feito ? 'feito' : ''}`}
@@ -42,7 +44,9 @@ export function BotaoAnel({
           transform="rotate(-90 30 30)"
         />
       </svg>
-{/* Play e pausa são sólidos: menores para ter o mesmo peso visual do + e do check. */}      <span className={`anel-icone ${icone === 'play' ? 'ajuste-play' : ''}`}>        <Icone nome={icone} tamanho={icone === 'play' || icone === 'pausa' ? 20 : 26} espessura={2.4} />
+      {/* Ícones sólidos são menores para ter o mesmo peso visual do + e do check. */}
+      <span className={`anel-icone ${icone === 'play' ? 'ajuste-play' : ''}`}>
+        <Icone nome={icone} tamanho={solido ? 20 : 28} espessura={feito ? 3 : 2.4} />
       </span>
     </button>
   )
@@ -52,6 +56,8 @@ export function CartaoHabito({
   habito: h,
   valor,
   sequencia,
+  semFazer,
+  foraDoDia = false,
   cronometroSeg,
   onAcao,
   onAbrir,
@@ -59,6 +65,10 @@ export function CartaoHabito({
   habito: Habito
   valor: number
   sequencia: number
+  /** Dias agendados seguidos sem fazer (mostrado como −N quando não há sequência). */
+  semFazer: number
+  /** Hábito não agendado neste dia (aparece só com "mostrar todos"). */
+  foraDoDia?: boolean
   /** Segundos do cronômetro, se estiver rodando para este hábito. */
   cronometroSeg: number | null
   onAcao: () => void
@@ -66,8 +76,10 @@ export function CartaoHabito({
 }) {
   const feito = concluido(h, valor)
   const rodando = cronometroSeg !== null
-  const icone: NomeIcone = feito && h.meta.tipo === 'check' ? 'check' : h.meta.tipo === 'tempo' ? (rodando ? 'pausa' : 'play') : feito ? 'check' : 'mais'
-  const detalhe = descreverValor(h.meta, valor)
+  const fracao = progresso(h, valor)
+  const icone: NomeIcone = feito ? 'check' : h.meta.tipo === 'tempo' ? (rodando ? 'parar' : 'play') : 'mais'
+  const valorTexto = descreverValor(h.meta, valor)
+  const detalhe = rodando ? `${formatarDuracao(cronometroSeg)} · ${valorTexto}` : valorTexto
   const rotulo =
     h.meta.tipo === 'check'
       ? feito
@@ -81,38 +93,38 @@ export function CartaoHabito({
 
   return (
     <article
-      className={`cartao-habito ${feito ? 'feito' : ''} ${h.arquivado ? 'arquivado' : ''}`}
-      style={{ '--cor': corDoHabito(h.cor) } as CSSProperties}
+      className={`cartao-habito ${feito ? 'feito' : ''} ${h.arquivado ? 'arquivado' : ''} ${foraDoDia ? 'fora-do-dia' : ''}`}
+      style={{ '--cor': corDoHabito(h.cor), '--fracao': fracao } as CSSProperties}
     >
       <button className="cartao-habito-corpo" onClick={onAbrir} aria-label={`Abrir ${h.nome}`}>
-        <span className="habito-icone" aria-hidden>
-          {h.icone}
-        </span>
-        <span className="habito-textos">
-          {sequencia > 0 && (
-            <span className="sequencia" title="Sequência de dias">
-              <Icone nome="chama" tamanho={14} /> {sequencia}
+        {sequencia > 0 ? (
+          <span className="contador sequencia" title={`Sequência de ${sequencia} dias`}>
+            <Icone nome="chama" tamanho={15} preenchido /> {sequencia}
+          </span>
+        ) : semFazer > 0 ? (
+          <span className="contador sem-fazer" title={`${semFazer} dias agendados sem fazer`}>
+            −{semFazer}
+          </span>
+        ) : null}
+        <span className="habito-linha">
+          <span className="habito-icone" aria-hidden>
+            {h.icone}
+          </span>
+          <span className="habito-textos">
+            <strong>{h.nome}</strong>
+            <span className="habito-sub">
+              {foraDoDia ? 'Não agendado neste dia' : descreverFrequencia(h.frequencia)}
+              {detalhe && <>, {detalhe}</>}
             </span>
-          )}
-          <strong>{h.nome}</strong>
-          <span className="habito-sub">
-            {rodando ? (
-              <span className="cronometro-rodando"><Icone nome="cronometro" tamanho={14} /> {formatarDuracao(cronometroSeg)}</span>
-            ) : (
-              descreverFrequencia(h.frequencia)
-            )}
-            {detalhe && <>, {detalhe}</>}
           </span>
         </span>
       </button>
-      <BotaoAnel
-        cor={corDoHabito(h.cor)}
-        fracao={progresso(h, valor)}
-        icone={icone}
-        feito={feito}
-        rotulo={rotulo}
-        onClick={onAcao}
-      />
+      <BotaoAnel cor={corDoHabito(h.cor)} fracao={fracao} icone={icone} feito={feito} rotulo={rotulo} onClick={onAcao} />
+      {rodando && (
+        <span className="selo-cronometro" aria-hidden>
+          <Icone nome="cronometro" tamanho={14} />
+        </span>
+      )}
     </article>
   )
 }

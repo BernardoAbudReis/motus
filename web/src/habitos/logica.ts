@@ -76,6 +76,21 @@ export function sequenciaAtual(h: Habito, valores: ValoresPorData, hoje: string)
   return n
 }
 
+/**
+ * Dias agendados seguidos sem fazer, contando a partir de ontem (o dia de hoje
+ * ainda não acabou). Mostrado como "−N" no card quando não há sequência.
+ */
+export function diasSemFazer(h: Habito, valores: ValoresPorData, hoje: string) {
+  const inicio = inicioEfetivo(h, valores)
+  let n = 0
+  for (let d = somarDias(hoje, -1); d >= inicio; d = somarDias(d, -1)) {
+    if (!previstoPelaFrequencia(h, d)) continue
+    if (concluido(h, valores.get(d) ?? 0)) break
+    n++
+  }
+  return n
+}
+
 export function melhorSequencia(h: Habito, valores: ValoresPorData, hoje: string) {
   let melhor = 0
   let atual = 0

@@ -5,6 +5,7 @@ import {
   contarPeriodo,
   descreverFrequencia,
   descreverValor,
+  diasSemFazer,
   inicioDaSemana,
   melhorSequencia,
   sequenciaAtual,
@@ -77,6 +78,13 @@ describe('sequência', () => {
     const v = feitos('2026-11-22', '2026-11-23')
     expect(sequenciaAtual(criadoHoje, v, HOJE)).toBe(2)
     expect(contarPeriodo([criadoHoje], new Map([['h', v]]), '2026-11-20', HOJE)).toEqual({ feitos: 2, total: 3 })
+  })
+
+  test('dias sem fazer conta só os agendados, a partir de ontem', () => {
+    const boxe = habito({ frequencia: { tipo: 'dias', dias: [2, 4] } })
+    // Último boxe em 12/11 (quinta). Depois: ter 17, qui 19 sem fazer; hoje (ter 24) não conta.
+    expect(diasSemFazer(boxe, feitos('2026-11-12'), HOJE)).toBe(2)
+    expect(diasSemFazer(habito(), feitos('2026-11-23'), HOJE)).toBe(0)
   })
 
   test('melhor sequência guarda o maior trecho', () => {

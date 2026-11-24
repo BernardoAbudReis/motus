@@ -1,0 +1,419 @@
+/* =====================================================================
+   Visual dos hábitos inspirado na referência do usuário: cards que enchem
+   com o progresso, contador de sequência, barra do cronômetro e ajustes em
+   lista agrupada. Mantém as cores e as regras da MOTUS (menta como destaque).
+   Carregado depois de habitos.css: as regras daqui prevalecem.
+   ===================================================================== */
+
+/* Topo: grupo de botões à esquerda, título central, "+" à direita. */
+.topo-pagina {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.topo-pagina > :first-child {
+  justify-self: start;
+}
+
+.topo-pagina > :last-child {
+  justify-self: end;
+}
+
+.grupo-botoes {
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+}
+
+.grupo-botoes button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.grupo-botoes button.ativo {
+  background: var(--destaque-fundo);
+  color: var(--destaque-forte);
+}
+
+.grupo-botoes button:disabled {
+  opacity: 0.35;
+}
+
+/* Dia selecionado: pílula menta com o anel de progresso do dia. */
+.dia.ativo .dia-numero {
+  background:
+    radial-gradient(
+      circle closest-side,
+      color-mix(in srgb, var(--destaque) 72%, #ffffff) calc(100% - 3px),
+      transparent calc(100% - 2.5px)
+    ),
+    conic-gradient(var(--fundo) calc(var(--fracao) * 360deg), rgb(9 12 21 / 0.18) 0);
+  color: var(--destaque-texto);
+}
+
+/* Card: o fundo enche da esquerda para a direita conforme o progresso. */
+.cartao-habito {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 6.25rem;
+  padding: 0 1rem 0 0;
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--cor) 12%, var(--superficie));
+  border: 1px solid color-mix(in srgb, var(--cor) 30%, var(--borda));
+}
+
+.cartao-habito::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--cor) 46%, var(--superficie));
+  transform-origin: left;
+  transform: scaleX(var(--fracao, 0));
+  transition:
+    transform var(--suave),
+    background-color var(--suave);
+}
+
+.cartao-habito.feito {
+  border-color: color-mix(in srgb, var(--cor) 75%, var(--borda));
+}
+
+.cartao-habito.feito::before {
+  background: color-mix(in srgb, var(--cor) 74%, var(--superficie));
+}
+
+.cartao-habito.fora-do-dia {
+  opacity: 0.55;
+}
+
+.cartao-habito-corpo {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.85rem 0 0.95rem 1.1rem;
+}
+
+.habito-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.habito-textos strong {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.habito-sub {
+  color: color-mix(in srgb, var(--texto) 78%, transparent);
+  font-size: 0.95rem;
+}
+
+.contador {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.contador.sequencia {
+  color: var(--texto);
+}
+
+.contador.sem-fazer {
+  color: var(--perigo);
+}
+
+.botao-anel {
+  width: 4rem;
+  height: 4rem;
+}
+
+.anel-trilha {
+  stroke: color-mix(in srgb, var(--cor) 38%, transparent);
+  stroke-width: 5.5;
+}
+
+.anel-progresso {
+  stroke-width: 5.5;
+}
+
+/* Concluído: disco claro com o check na cor do hábito. */
+.botao-anel.feito .anel-trilha {
+  fill: var(--texto);
+  stroke: var(--texto);
+}
+
+.botao-anel.feito .anel-progresso {
+  stroke: transparent;
+}
+
+.botao-anel.feito {
+  color: color-mix(in srgb, var(--cor) 72%, #090c15);
+}
+
+.selo-cronometro {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.5rem;
+  color: color-mix(in srgb, var(--cor) 70%, var(--texto));
+}
+
+/* Barra flutuante do cronômetro, acima da navegação, em qualquer aba. */
+.barra-cronometro {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  width: calc(100% - 2rem);
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.4rem 0.4rem 0.4rem 1rem;
+  background: var(--superficie-2);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  box-shadow: var(--sombra);
+  z-index: 15;
+  animation: aparecer var(--suave) both;
+}
+
+.barra-cronometro-icone {
+  font-size: 1.35rem;
+}
+
+.barra-cronometro-nome {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.barra-cronometro-tempo {
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra-cronometro-parar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--destaque);
+  background: var(--fundo);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.app.com-barra .conteudo {
+  padding-bottom: calc(10rem + env(safe-area-inset-bottom));
+}
+
+.app.com-barra .aviso {
+  bottom: calc(9rem + env(safe-area-inset-bottom));
+}
+
+/* Painéis: fechar à esquerda, título central, ação à direita. */
+.folha-topo {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.folha-topo h2 {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.botao-salvar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 0;
+  background: var(--cor, var(--destaque));
+  color: #090c15;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* Prévia do hábito no formulário: card cheio, com o nome editável. */
+.previa-habito {
+  gap: 0.9rem;
+  padding: 1.2rem 1.25rem;
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 1.6rem;
+  background: color-mix(in srgb, var(--cor) 74%, var(--superficie));
+}
+
+.previa-textos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.previa-nome {
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+.previa-nome:focus-visible {
+  outline: none;
+}
+
+.previa-nome::placeholder {
+  color: color-mix(in srgb, var(--texto) 60%, transparent);
+}
+
+.contador-caracteres {
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--texto-sutil);
+  margin: 0.45rem 0.6rem 0;
+}
+
+/* Ajustes em lista agrupada. */
+.grupo-titulo {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.4rem 0.3rem 0.5rem;
+}
+
+.lista-agrupada {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 1.15rem;
+  overflow: hidden;
+}
+
+.ajuste + .ajuste,
+.lista-agrupada > .linha-ajuste + .linha-ajuste {
+  border-top: 1px solid var(--borda);
+}
+
+.linha-ajuste {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 3.6rem;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  background: none;
+  border: 0;
+  text-align: left;
+  font-size: 1.02rem;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.ajuste-icone {
+  width: 2.1rem;
+  height: 2.1rem;
+  flex-shrink: 0;
+  border-radius: 0.6rem;
+  display: grid;
+  place-items: center;
+  background: var(--superficie-2);
+  color: var(--texto);
+}
+
+.ajuste-rotulo {
+  flex: 1;
+}
+
+.ajuste-valor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--texto-sutil);
+  font-size: 0.95rem;
+}
+
+.painel-ajuste {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+}
+
+.painel-ajuste .grade-icones,
+.painel-ajuste .grade-dias,
+.painel-ajuste .linha-campos,
+.painel-ajuste .rotulo-inline,
+.painel-ajuste .campo-solto {
+  margin: 0;
+}
+
+/* Só a cor escolhida ganha o anel (antes todas pareciam selecionadas). */
+.grade-cores button {
+  border: 0;
+  box-shadow: none;
+}
+
+.grade-cores button.ativo {
+  box-shadow:
+    0 0 0 3px var(--superficie),
+    0 0 0 5px var(--texto);
+}
+
+.amostra-cor {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+}
+
+.valor-emoji {
+  font-size: 1.3rem;
+}
+
+.campo-data {
+  width: auto;
+  border: 0;
+  border-radius: 0.6rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--superficie-2);
+  font-size: 0.95rem;
+}
+
+.acoes-perigosas {
+  margin-top: 1.4rem;
+}
+
+.linha-ajuste.perigo,
+.linha-ajuste.perigo .ajuste-icone {
+  color: var(--perigo);
+}

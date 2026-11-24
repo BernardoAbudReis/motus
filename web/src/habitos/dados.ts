@@ -81,17 +81,17 @@ export function acaoRapida(h: Habito, data: string) {
   return somar(h, data, 1)
 }
 
-export async function criarHabito(campos: CamposHabito) {
+export async function criarHabito(campos: CamposHabito, criadoEm = Date.now()) {
   const ultima = await db.habitos.orderBy('ordem').last()
   return salvar<Habito>('habitos', novoId(), {
     ...campos,
     arquivado: false,
     ordem: (ultima?.ordem ?? 0) + 1,
-    criadoEm: Date.now(),
+    criadoEm,
   })
 }
 
-export function atualizarHabito(id: string, campos: Partial<CamposHabito>) {
+export function atualizarHabito(id: string, campos: Partial<CamposHabito & { criadoEm: number }>) {
   return alterar<Habito>('habitos', id, campos)
 }
 

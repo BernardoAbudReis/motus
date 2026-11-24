@@ -7,6 +7,7 @@ import { iniciarSincronizacaoAutomatica } from './sync'
 import './estilos.css'
 import './habitos.css'
 import './academia.css'
+import './cartoes.css'
 
 // O evento de instalação pode disparar antes do React montar: captura já.
 capturarEventoInstalacao()

@@ -3,6 +3,8 @@ import { AvisoAtualizacao } from './components/AvisoAtualizacao'
 import { IndicadorSync } from './components/IndicadorSync'
 import { NavInferior, type Aba } from './components/NavInferior'
 import { BannerInstalacao } from './components/OrientacaoInstalacao'
+import { BarraCronometro } from './habitos/BarraCronometro'
+import { useCronometro } from './habitos/cronometro'
 import { usePreferencias } from './preferencias'
 import { Academia } from './pages/Academia'
 import { Configuracoes } from './pages/Configuracoes'
@@ -17,6 +19,7 @@ function abaDaUrl(): Aba {
 export function App() {
   const [aba, setAba] = useState<Aba>(abaDaUrl)
   const { tema } = usePreferencias()
+  const { cron } = useCronometro()
 
   useEffect(() => {
     document.documentElement.dataset.tema = tema
@@ -37,7 +40,7 @@ export function App() {
   }
 
   return (
-    <div className="app">
+    <div className={`app ${cron ? 'com-barra' : ''}`}>
       <IndicadorSync />
       <BannerInstalacao />
       <main className="conteudo">
@@ -46,6 +49,7 @@ export function App() {
         {aba === 'estatisticas' && <Estatisticas />}
         {aba === 'configuracoes' && <Configuracoes />}
       </main>
+      <BarraCronometro />
       <AvisoAtualizacao />
       <NavInferior aba={aba} onTrocar={trocar} />
     </div>

@@ -1,0 +1,128 @@
+/* ---------- Estatísticas ---------- */
+
+.secao-estat {
+  margin: 1.5rem 0 2rem;
+}
+
+.secao-estat > h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.75rem;
+}
+
+.secao-estat > .grafico {
+  margin-top: 0.75rem;
+}
+
+.bloco-estat {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.bloco-estat h3 {
+  margin: 0;
+}
+
+.bloco-estat .titulo-secao {
+  margin: 0;
+}
+
+.bloco-estat .grafico {
+  margin-top: 0;
+}
+
+/* Números de destaque (KPI): texto na cor do texto, nunca na cor da série. */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.kpi {
+  display: grid;
+  align-content: start;
+  gap: 0.1rem;
+  padding: 0.8rem 0.9rem;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+  min-width: 0;
+}
+
+.kpi-valor {
+  font-size: 1.45rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-rotulo {
+  font-size: 0.8rem;
+  color: var(--texto-sutil);
+}
+
+.kpi-detalhe {
+  font-size: 0.75rem;
+  color: var(--texto-sutil);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.2rem;
+}
+
+/* Colunas do gráfico: menta, topo arredondado; as outras apagam ao destacar uma. */
+.grafico-coluna {
+  fill: var(--destaque);
+  transition: opacity var(--rapida);
+}
+
+.grafico-coluna.apagada {
+  opacity: 0.35;
+}
+
+/* Tabela de hábitos com mini barra de consistência na cor de cada hábito. */
+.tabela-habitos {
+  margin-top: 1rem;
+}
+
+.tabela-habitos td {
+  vertical-align: middle;
+}
+
+.celula-habito {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mini-barra {
+  --fracao: 0;
+  display: inline-block;
+  width: 3.5rem;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 0.45rem;
+  background: linear-gradient(90deg, var(--cor) calc(var(--fracao) * 100%), var(--borda) 0);
+}
+
+.num-inline {
+  font-variant-numeric: tabular-nums;
+}
+
+.sequencia-celula {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  color: var(--destaque-forte);
+  font-weight: 700;
+}

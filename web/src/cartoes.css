@@ -6,15 +6,16 @@
    ===================================================================== */
 
 /* Topo: grupo de botões à esquerda, título central, "+" à direita. */
-.topo-pagina {
+/* Só no topo com botões: o topo simples (só título) fica alinhado à esquerda. */
+.topo-pagina:not(.simples) {
   grid-template-columns: 1fr auto 1fr;
 }
 
-.topo-pagina > :first-child {
+.topo-pagina:not(.simples) > :first-child {
   justify-self: start;
 }
 
-.topo-pagina > :last-child {
+.topo-pagina:not(.simples) > :last-child {
   justify-self: end;
 }
 

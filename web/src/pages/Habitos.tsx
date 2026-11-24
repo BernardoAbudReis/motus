@@ -11,13 +11,9 @@ import {
   previstoPelaFrequencia,
   contarPeriodo,
   diasSemFazer,
-  inicioDaSemana,
-  inicioDoMes,
   lerData,
-  percentual,
   sequenciaAtual,
   somarDias,
-  type ValoresPorData,
 } from '../habitos/logica'
 import { dataLocal } from '../repo'
 
@@ -85,34 +81,6 @@ function CalendarioHorizontal({
           </button>
         )
       })}
-    </div>
-  )
-}
-
-function Resumo({ habitos, valores, dia }: { habitos: Habito[]; valores: Map<string, ValoresPorData>; dia: string }) {
-  const doDia = contarPeriodo(habitos, valores, dia, dia)
-  const semana = percentual(contarPeriodo(habitos, valores, inicioDaSemana(dia), dia))
-  const mes = percentual(contarPeriodo(habitos, valores, inicioDoMes(dia), dia))
-  if (doDia.total === 0 && semana === 0 && mes === 0) return null
-  return (
-    <div className="resumo">
-      <div className="resumo-item">
-        <span className="resumo-valor">
-          {doDia.feitos}/{doDia.total}
-        </span>
-        <span className="resumo-rotulo">no dia</span>
-        <span className="barra" style={{ '--fracao': percentual(doDia) / 100 } as CSSProperties} />
-      </div>
-      <div className="resumo-item">
-        <span className="resumo-valor">{semana}%</span>
-        <span className="resumo-rotulo">semana</span>
-        <span className="barra" style={{ '--fracao': semana / 100 } as CSSProperties} />
-      </div>
-      <div className="resumo-item">
-        <span className="resumo-valor">{mes}%</span>
-        <span className="resumo-rotulo">mês</span>
-        <span className="barra" style={{ '--fracao': mes / 100 } as CSSProperties} />
-      </div>
     </div>
   )
 }
@@ -194,7 +162,6 @@ export function Habitos() {
       {!verArquivados && (
         <>
           <CalendarioHorizontal dia={dia} hoje={hoje} fracaoDoDia={fracaoDoDia} onEscolher={setDia} />
-          <Resumo habitos={ativos} valores={valores} dia={dia} />
         </>
       )}
 

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { Atividade, Conteudo, Materia, Prioridade, StatusConteudo, TipoEstudo } from '../db'
-import { corDoHabito } from '../habitos/dados'
+import { corHex } from '../cores'
 import type { DadosEstudos } from './dados'
 
 export const ROTULO_STATUS: Record<StatusConteudo, string> = {
@@ -47,6 +47,6 @@ export function useAcoes() {
 }
 
 export function corMateria(m?: Materia) {
-  return corDoHabito(m?.cor ?? 'menta')
+  return corHex(m?.cor ?? 'menta')
 }
 

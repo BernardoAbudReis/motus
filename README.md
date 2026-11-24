@@ -7,7 +7,7 @@ Sistema web instalável (PWA) para hábitos pessoais e treinos de academia. Func
 - Fundo `#090C15`, superfícies `#111722`, bordas `#252D39`, texto `#F6F5F6`, texto secundário `#A3A5AA`.
 - O verde menta `#53E79F` é a única cor de destaque. O verde escuro `#123B2B` serve de fundo de destaque.
 - Os tokens ficam em `web/src/estilos.css`. O símbolo está em vetor em `web/public/logo.svg`, e o logo original em `docs/marca/`.
-- Cores dos cards de hábito: tons sóbrios escolhidos pelo usuário (`CORES_HABITO` em `web/src/habitos/dados.ts`), sem roxo, azul ou dourado.
+- Cores de hábitos e matérias (`web/src/cores.ts`): 27 tons prontos, sem roxo, azul ou dourado, e a **cor personalizada** (seletor de cores do aparelho, guardada como `#rrggbb`). O texto sobre o card concluído usa a tinta de maior contraste, calculada para cada tema.
 
 ## Estrutura
 

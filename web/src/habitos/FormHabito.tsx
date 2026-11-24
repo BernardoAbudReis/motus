@@ -3,7 +3,9 @@ import { Folha } from '../components/Folha'
 import { Icone, type NomeIcone } from '../components/Icone'
 import type { Frequencia, Habito, Meta } from '../db'
 import { dataLocal } from '../repo'
-import { CORES_HABITO, ICONES_HABITO, arquivarHabito, atualizarHabito, corDoHabito, criarHabito, tintaDoHabito, excluirHabito, useConclusoes, type CamposHabito } from './dados'
+import { SeletorCor } from '../components/SeletorCor'
+import { atributosTinta, tintaSobreCor } from '../cores'
+import { ICONES_HABITO, arquivarHabito, atualizarHabito, corDoHabito, criarHabito, excluirHabito, useConclusoes, type CamposHabito } from './dados'
 import { MINIMO_CONCLUSOES, horarioDoLembrete, lembreteDe, minutosParaHorario } from './lembrete'
 import { DIAS_CURTOS, descreverFrequencia, descreverMeta, lerData } from './logica'
 
@@ -111,13 +113,13 @@ export function FormHabito({ habito, onFechar }: { habito?: Habito; onFechar: ()
       titulo={habito ? 'Editar hábito' : 'Novo hábito'}
       onFechar={onFechar}
       acao={
-        <button type="submit" form="form-habito" className="botao-salvar" style={{ '--cor': corHex } as CSSProperties} aria-label="Salvar hábito">
+        <button type="submit" form="form-habito" className="botao-salvar" style={{ '--cor': corHex, color: tintaSobreCor(cor) } as CSSProperties} aria-label="Salvar hábito">
           <Icone nome="check" tamanho={22} espessura={2.6} />
         </button>
       }
     >
       <form id="form-habito" className="formulario" onSubmit={enviar}>
-        <div className="previa-habito" data-tinta={tintaDoHabito(cor)} style={{ '--cor': corHex } as CSSProperties}>
+        <div className="previa-habito" {...atributosTinta(cor)} style={{ '--cor': corHex } as CSSProperties}>
           <span className="habito-icone" aria-hidden>
             {icone || '✅'}
           </span>
@@ -141,19 +143,7 @@ export function FormHabito({ habito, onFechar }: { habito?: Habito; onFechar: ()
         <h3 className="grupo-titulo">Aparência</h3>
         <div className="lista-agrupada">
           <Linha icone="paleta" rotulo="Cor" valor={<span className="amostra-cor" style={{ background: corHex }} />} aberta={painel === 'cor'} onAlternar={() => alternar('cor')}>
-            <div className="grade-cores">
-              {CORES_HABITO.map((c) => (
-                <button
-                  type="button"
-                  key={c.id}
-                  className={c.id === cor ? 'ativo' : ''}
-                  style={{ '--cor': c.hex } as CSSProperties}
-                  aria-label={c.nome}
-                  aria-pressed={c.id === cor}
-                  onClick={() => setCor(c.id)}
-                />
-              ))}
-            </div>
+            <SeletorCor valor={cor} onMudar={setCor} />
           </Linha>
           <Linha icone="sorriso" rotulo="Ícone" valor={<span className="valor-emoji">{icone}</span>} aberta={painel === 'icone'} onAlternar={() => alternar('icone')}>
             <div className="grade-icones">

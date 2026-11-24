@@ -138,6 +138,19 @@
   background: var(--cor);
 }
 
+/* O check sobre a cor da matéria usa a tinta de maior contraste (cores.ts). */
+.item-atividade[data-tinta='clara'] .check-atividade {
+  color: #f6f5f6;
+}
+
+[data-tema='claro'] .item-atividade[data-tinta-claro='escura'] .check-atividade {
+  color: #090c15;
+}
+
+[data-tema='claro'] .item-atividade[data-tinta-claro='clara'] .check-atividade {
+  color: #f6f5f6;
+}
+
 .item-atividade-corpo {
   flex: 1;
   min-width: 0;

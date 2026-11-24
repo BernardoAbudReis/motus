@@ -11,7 +11,10 @@ test('estudos: matéria, conteúdos, planejar, concluir rápido, detalhes, reage
   // Matéria e conteúdos.
   await page.getByRole('button', { name: 'Criar primeira matéria' }).click()
   await page.getByLabel('Nome').fill('JavaScript')
+  await page.getByLabel('Cor personalizada').fill('#3a5fcd') // cor criada no seletor do aparelho
+  await expect(page.getByText('Cor personalizada #3A5FCD')).toBeVisible()
   await page.getByRole('button', { name: 'Salvar matéria' }).click()
+  await expect.poll(async () => (await lerColecao(page, 'materias'))[0]?.cor).toBe('#3A5FCD')
   const materia = page.getByRole('dialog', { name: 'JavaScript' })
   for (const nome of ['Arrays', 'Objetos', 'Promises']) {
     await materia.getByLabel('Novo conteúdo').fill(nome)

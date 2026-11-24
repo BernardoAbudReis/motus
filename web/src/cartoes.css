@@ -93,8 +93,8 @@
   background: color-mix(in srgb, var(--cor) 74%, var(--superficie));
 }
 
-/* Texto sobre o card todo preenchido: tinta com contraste ≥ 4,5:1 para cada cor
-   (escolhida em CORES_HABITO). No tema claro o preenchimento é claro: tinta escura. */
+/* Texto sobre o card todo preenchido: a tinta de maior contraste para a cor,
+   calculada em cores.ts para cada tema (vale também para cores personalizadas). */
 .cartao-habito.feito,
 .previa-habito {
   --tinta-cartao: var(--texto);
@@ -102,9 +102,16 @@
 
 .cartao-habito.feito[data-tinta="escura"],
 .previa-habito[data-tinta="escura"],
-[data-tema="claro"] .cartao-habito.feito,
-[data-tema="claro"] .previa-habito {
+[data-tema="claro"] .cartao-habito.feito[data-tinta-claro="escura"],
+[data-tema="claro"] .previa-habito[data-tinta-claro="escura"] {
   --tinta-cartao: #090c15;
+}
+
+.cartao-habito.feito[data-tinta="clara"],
+.previa-habito[data-tinta="clara"],
+[data-tema="claro"] .cartao-habito.feito[data-tinta-claro="clara"],
+[data-tema="claro"] .previa-habito[data-tinta-claro="clara"] {
+  --tinta-cartao: #f6f5f6;
 }
 
 .cartao-habito.feito .cartao-habito-corpo,
@@ -474,10 +481,46 @@
   box-shadow: none;
 }
 
-.grade-cores button.ativo {
+.grade-cores button.ativo,
+.grade-cores .cor-personalizada.ativo {
   box-shadow:
     0 0 0 3px var(--superficie),
     0 0 0 5px var(--texto);
+}
+
+/* Último círculo: arco-íris até escolher; depois, a própria cor. O input de cor
+   cobre o círculo (transparente) para abrir o seletor do aparelho ao tocar. */
+.grade-cores .cor-personalizada {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #090c15;
+  background: conic-gradient(#e5584f, #e5864e, #b8e05a, #53e79f, #3cc2ae, #6f9bd1, #a07ad1, #d96c8a, #e5584f);
+  cursor: pointer;
+}
+
+.grade-cores .cor-personalizada.escolhida {
+  background: var(--cor);
+}
+
+.grade-cores .cor-personalizada input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.dica-cor {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
 }
 
 .amostra-cor {

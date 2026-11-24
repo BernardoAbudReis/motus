@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { Icone, type NomeIcone } from '../components/Icone'
+import { atributosTinta } from '../cores'
 import type { Atividade, TipoEstudo } from '../db'
 import { ROTULO_TIPO, corMateria, useAcoes } from './contexto'
 import { atrasada, dataCurta } from './logica'
@@ -17,6 +18,7 @@ export function ItemAtividade({ atividade: a, mostrarData }: { atividade: Ativid
     <div
       className={`item-atividade ${feita ? 'feita' : ''} ${removida ? 'removida' : ''} ${atrasada(a, hoje) ? 'atrasada' : ''}`}
       style={{ '--cor': corMateria(materia) } as CSSProperties}
+      {...atributosTinta(materia?.cor ?? 'menta')}
     >
       <button
         className="check-atividade"

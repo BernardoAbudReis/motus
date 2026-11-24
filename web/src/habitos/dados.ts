@@ -2,45 +2,11 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, type Habito, type RegistroHabito } from '../db'
 import { alterar, ativos, dataLocal, excluir, novoId, salvar } from '../repo'
+import { corHex as corDoHabito } from '../cores'
 import { concluido, type ValoresPorData } from './logica'
 
-/**
- * Cores dos cards. Tons sóbrios que funcionam como fundo escuro tingido.
- * Sem roxo, azul ou dourado, para não competir com o verde menta da marca.
- */
-// tinta: cor do texto sobre o card concluído (todo preenchido) no tema escuro,
-// escolhida pelo maior contraste (WCAG ≥ 4,5:1). No tema claro, sempre escura.
-export const CORES_HABITO = [
-  // Verdes
-  { id: 'menta', nome: 'Menta', hex: '#53E79F', tinta: 'escura' },
-  { id: 'verde', nome: 'Verde', hex: '#5DBB63', tinta: 'escura' },
-  { id: 'limao', nome: 'Limão', hex: '#B8E05A', tinta: 'escura' },
-  { id: 'oliva', nome: 'Oliva', hex: '#9BB062', tinta: 'escura' },
-  { id: 'agua', nome: 'Água', hex: '#3CC2AE', tinta: 'escura' },
-  { id: 'petroleo', nome: 'Petróleo', hex: '#2E9C93', tinta: 'clara' },
-  // Vermelhos e rosas
-  { id: 'vermelho', nome: 'Vermelho', hex: '#E5584F', tinta: 'clara' },
-  { id: 'vinho', nome: 'Vinho', hex: '#B5475E', tinta: 'clara' },
-  { id: 'rosa', nome: 'Rosa', hex: '#D96C8A', tinta: 'clara' },
-  { id: 'coral', nome: 'Coral', hex: '#F08A7E', tinta: 'escura' },
-  // Laranjas e terrosos
-  { id: 'laranja', nome: 'Laranja', hex: '#E5864E', tinta: 'escura' },
-  { id: 'pessego', nome: 'Pêssego', hex: '#F0A983', tinta: 'escura' },
-  { id: 'terra', nome: 'Terra', hex: '#B4876A', tinta: 'clara' },
-  { id: 'cafe', nome: 'Café', hex: '#9C6B4E', tinta: 'clara' },
-  { id: 'areia', nome: 'Areia', hex: '#CDB99A', tinta: 'escura' },
-  // Neutros
-  { id: 'grafite', nome: 'Grafite', hex: '#A3A5AA', tinta: 'escura' },
-  { id: 'pedra', nome: 'Pedra', hex: '#7E8A8C', tinta: 'clara' },
-] as const
-
-export function corDoHabito(id: string) {
-  return CORES_HABITO.find((c) => c.id === id)?.hex ?? CORES_HABITO[0].hex
-}
-
-export function tintaDoHabito(id: string) {
-  return CORES_HABITO.find((c) => c.id === id)?.tinta ?? 'escura'
-}
+/** Cores ficam em ../cores.ts (compartilhadas com as matérias de Estudos). */
+export { corHex as corDoHabito } from '../cores'
 
 export const ICONES_HABITO = [
   '📚', '📖', '✍️', '💻', '🧠', '💊', '💧', '🍎', '🥗', '🛏️',

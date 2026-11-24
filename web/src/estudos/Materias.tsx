@@ -2,7 +2,8 @@ import { useState, type CSSProperties, type FormEvent } from 'react'
 import { Folha } from '../components/Folha'
 import { Icone } from '../components/Icone'
 import type { Conteudo, Materia, Prioridade, StatusConteudo } from '../db'
-import { CORES_HABITO, corDoHabito } from '../habitos/dados'
+import { SeletorCor } from '../components/SeletorCor'
+import { CORES, corHex, tintaSobreCor } from '../cores'
 import { BarraMateria, LinhaAcao, ListaAtividades, Numero, Secao } from './comum'
 import { ROTULO_PRIORIDADE, ROTULO_STATUS, ROTULO_TIPO, corMateria, useAcoes } from './contexto'
 import {
@@ -169,7 +170,7 @@ export function FormMateria({ materia, onFechar, onCriada }: { materia?: Materia
   const [nome, setNome] = useState(materia?.nome ?? '')
   const [setorId, setSetorId] = useState(materia?.setorId ?? dados.setores.find((s) => !s.arquivado)?.id ?? '')
   const [novoSetor, setNovoSetor] = useState('')
-  const [cor, setCor] = useState(materia?.cor ?? CORES_HABITO[(dados.materias.length + 2) % CORES_HABITO.length].id)
+  const [cor, setCor] = useState(materia?.cor ?? CORES[(dados.materias.length * 5 + 4) % CORES.length].id)
   const [icone, setIcone] = useState(materia?.icone ?? '')
   const [descricao, setDescricao] = useState(materia?.descricao ?? '')
   const [erro, setErro] = useState('')
@@ -206,7 +207,7 @@ export function FormMateria({ materia, onFechar, onCriada }: { materia?: Materia
       titulo={materia ? 'Editar matéria' : 'Nova matéria'}
       onFechar={onFechar}
       acao={
-        <button type="submit" form="form-materia" className="botao-salvar" style={{ '--cor': corDoHabito(cor) } as CSSProperties} aria-label="Salvar matéria">
+        <button type="submit" form="form-materia" className="botao-salvar" style={{ '--cor': corHex(cor), color: tintaSobreCor(cor) } as CSSProperties} aria-label="Salvar matéria">
           <Icone nome="check" tamanho={22} espessura={2.6} />
         </button>
       }
@@ -235,19 +236,7 @@ export function FormMateria({ materia, onFechar, onCriada }: { materia?: Materia
           </label>
         )}
         <p className="rotulo-campo">Cor</p>
-        <div className="grade-cores">
-          {CORES_HABITO.map((c) => (
-            <button
-              type="button"
-              key={c.id}
-              className={c.id === cor ? 'ativo' : ''}
-              style={{ '--cor': c.hex } as CSSProperties}
-              aria-label={c.nome}
-              aria-pressed={c.id === cor}
-              onClick={() => setCor(c.id)}
-            />
-          ))}
-        </div>
+        <SeletorCor valor={cor} onMudar={setCor} />
         <p className="rotulo-campo">Ícone (opcional)</p>
         <div className="grade-icones compacta">
           {ICONES_MATERIA.map((i) => (

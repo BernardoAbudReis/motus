@@ -20,6 +20,14 @@ export function AvisoAtualizacao() {
     },
   })
 
+  // Todos os hooks antes de qualquer return: um hook depois do aviso de nova
+  // versão quebrava a tela inteira justamente quando havia atualização.
+  useEffect(() => {
+    if (!prontoOffline) return
+    const t = setTimeout(() => setProntoOffline(false), 4000)
+    return () => clearTimeout(t)
+  }, [prontoOffline, setProntoOffline])
+
   if (precisaAtualizar) {
     return (
       <div className="aviso" role="alert">
@@ -33,12 +41,6 @@ export function AvisoAtualizacao() {
       </div>
     )
   }
-
-  useEffect(() => {
-    if (!prontoOffline) return
-    const t = setTimeout(() => setProntoOffline(false), 4000)
-    return () => clearTimeout(t)
-  }, [prontoOffline, setProntoOffline])
 
   if (prontoOffline) {
     return (

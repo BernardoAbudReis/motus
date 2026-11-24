@@ -129,7 +129,8 @@ export function Habitos() {
   // Se virou o dia com o app aberto e o usuário estava em "hoje", acompanha.
   const hojeAnterior = useRef(hoje)
   useEffect(() => {
-    if (dia === hojeAnterior.current) setDia(hoje)
+    const anterior = hojeAnterior.current
+    setDia((d) => (d === anterior ? hoje : d))
     hojeAnterior.current = hoje
   }, [hoje])
 

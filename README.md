@@ -32,7 +32,7 @@ cd web && npm install && npm run dev # front em :5173 (encaminha /api para :3333
 ```
 
 - `npm test` em `api/` roda os testes de sincronização. Eles precisam do PostgreSQL ligado.
-- `npm test` em `web/` roda os testes da lógica de hábitos (agenda, sequência e percentuais).
+- `npm test` em `web/` roda os testes da lógica de hábitos e da academia. `npm run lint` roda o ESLint, que também faz parte do `npm run build`; a regra de hooks do React é tratada como erro.
 - O service worker só roda no build. Para testar a PWA, use `npm run build` em `web/` e acesse a API (`npm run dev` em `api/`) em http://localhost:3333.
 - Para testar a instalação no celular pela rede local, use `npm run dev:celular` (HTTPS com certificado autoassinado).
 - `npm run icones` em `web/` gera os ícones de Android, iOS e favicon a partir de `web/public/logo.svg`.

@@ -6,6 +6,9 @@ test('tela inicial: sem conta não entra no app; cria conta, guarda o código e 
   await page.goto('/')
   await expect(page.locator('.tela-inicial')).toBeVisible()
   await expect(page.locator('.nav-inferior')).toHaveCount(0)
+  // Abre sempre em "Entrar"; criar conta fica no link abaixo.
+  await expect(page.getByRole('heading', { name: 'Entrar' })).toBeVisible()
+  await page.getByRole('button', { name: 'Criar uma conta' }).click()
   await expect(page.getByRole('heading', { name: 'Criar sua conta' })).toBeVisible()
 
   // O app só abre depois de confirmar que guardou o código.
@@ -27,7 +30,6 @@ test('código de recuperação: esqueci a senha, redefino e entro em outro apare
   const { email, codigo } = (await adicionarExemplos(page))!
   await page.getByRole('button', { name: 'Configurações' }).click()
   await page.getByRole('button', { name: 'Sair' }).click()
-  // Quem já entrou neste aparelho volta direto em "Entrar".
   await expect(page.getByRole('heading', { name: 'Entrar' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Esqueci minha senha' }).click()

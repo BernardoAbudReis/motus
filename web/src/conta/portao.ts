@@ -33,5 +33,3 @@ export function usePortao(): EstadoPortao {
   return temToken && !segurandoAgora ? 'dentro' : 'visitante'
 }
 
-/** Quem já entrou neste aparelho alguma vez vê "Entrar" primeiro; quem é novo vê "Criar conta". */
-export const CHAVE_JA_ENTROU = 'motus-ja-entrou'

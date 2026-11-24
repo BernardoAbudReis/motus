@@ -4,7 +4,7 @@ import { descreverSync, useEstadoSync } from '../components/IndicadorSync'
 import { alterarPreferencias } from '../preferencias'
 import { sincronizar } from '../sync'
 import { CodigoRecuperacao } from './CodigoRecuperacao'
-import { CHAVE_JA_ENTROU, segurarPortao } from './portao'
+import { segurarPortao } from './portao'
 
 type Modo = 'criar' | 'entrar' | 'recuperar'
 
@@ -18,7 +18,7 @@ function mensagemDeErro(err: unknown) {
  * já estiverem neste aparelho sobem para a conta na primeira sincronização.
  */
 export function TelaInicial() {
-  const [modo, setModo] = useState<Modo>(() => (localStorage.getItem(CHAVE_JA_ENTROU) ? 'entrar' : 'criar'))
+  const [modo, setModo] = useState<Modo>('entrar')
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')

@@ -1,0 +1,96 @@
+name: Testes
+
+# Roda tudo a cada push e pull request: lint, tipos, testes de unidade,
+# testes da API (com PostgreSQL) e testes de ponta a ponta no navegador.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: testes-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: habitos
+          POSTGRES_PASSWORD: habitos
+          POSTGRES_DB: habitos
+        ports: ['15433:5432']
+        options: >-
+          --health-cmd "pg_isready -U habitos"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://habitos:habitos@localhost:15433/habitos
+      JWT_SECRET: segredo-so-para-os-testes-do-ci-com-mais-de-32-caracteres
+      CI: 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            api/package-lock.json
+
+      - name: Instalar dependências
+        run: |
+          npm ci --prefix web --no-audit --no-fund
+          npm ci --prefix api --no-audit --no-fund
+
+      - name: App — lint, tipos e testes de unidade
+        working-directory: web
+        run: |
+          npx eslint .
+          npx tsc --noEmit
+          npm test
+
+      - name: API — tipos e testes (sincronização, conta, backup, lembretes)
+        working-directory: api
+        run: |
+          npx tsc --noEmit
+          npm test
+
+      - name: Chaves VAPID temporárias (lembretes nos testes de navegador)
+        working-directory: api
+        run: |
+          node --input-type=module -e "import { generateVAPIDKeys } from 'web-push'; const k = generateVAPIDKeys(); console.log('VAPID_PUBLIC_KEY=' + k.publicKey); console.log('VAPID_PRIVATE_KEY=' + k.privateKey)" >> "$GITHUB_ENV"
+          echo "VAPID_SUBJECT=https://localhost" >> "$GITHUB_ENV"
+
+      - name: Build do app
+        working-directory: web
+        run: npm run build
+
+      - name: Navegador para os testes
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes de ponta a ponta
+        working-directory: web
+        run: npm run e2e
+
+      - name: Relatório dos testes de navegador
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-playwright
+          path: |
+            web/playwright-report
+            web/test-results
+          retention-days: 7

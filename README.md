@@ -37,20 +37,42 @@ cd api && cp .env.example .env && npm install && npm run dev   # API em :3333
 cd web && npm install && npm run dev # front em :5173 (encaminha /api para :3333)
 ```
 
-- `npm test` em `api/` roda os testes de sincronização. Eles precisam do PostgreSQL ligado.
-- `npm test` em `web/` roda os testes da lógica de hábitos e da academia. `npm run lint` roda o ESLint, que também faz parte do `npm run build`; a regra de hooks do React é tratada como erro.
+- `npm test` em `api/` roda os testes da API (sincronização, conta, backup, lembretes). Precisam do PostgreSQL ligado.
+- `npm test` em `web/` roda os testes de unidade (hábitos, academia, estatísticas, lembretes e service worker).
+- `npm run build && npm run e2e` em `web/` roda os testes de navegador (Playwright, pasta `web/e2e`), com a API real e o PostgreSQL.
+- `npm run lint` roda o ESLint, que também faz parte do `npm run build`; a regra de hooks do React é tratada como erro.
+- O workflow `.github/workflows/ci.yml` roda tudo isso a cada push e pull request.
 - O service worker só roda no build. Para testar a PWA, use `npm run build` em `web/` e acesse a API (`npm run dev` em `api/`) em http://localhost:3333.
 - Para testar a instalação no celular pela rede local, use `npm run dev:celular` (HTTPS com certificado autoassinado).
 - `npm run icones` em `web/` gera os ícones de Android, iOS e favicon a partir de `web/public/logo.svg`.
 
+## Conta e dados
+
+- **Recuperação de senha sem e-mail**: ao criar a conta, o app mostra uma única vez um código de recuperação (`XXXX-XXXX-XXXX-XXXX`). Em "Esqueci minha senha", ele redefine a senha. O código é trocado a cada uso, o servidor guarda só o hash, e dá para gerar outro em Configurações.
+- Trocar ou redefinir a senha desconecta os outros aparelhos (versão da sessão no token).
+- Excluir a conta apaga tudo no servidor. Os dados do aparelho ficam até o usuário apagá-los em Configurações → Dados.
+- Exportar e importar todos os dados em JSON funciona sem conta e sem internet. Importar só traz o que for mais novo que o do aparelho.
+- O servidor confere o formato de cada tipo de dado (`api/src/validacao.ts`). Um registro inválido é descartado sozinho, sem travar o resto do lote.
+
+## Backup
+
+- O servidor gera uma cópia completa dos dados por dia (`api/src/backup.ts`) no volume `/dados` do Railway, separado do volume do banco, e guarda as 14 mais recentes.
+- Para baixar uma cópia, use `railway volume files` no volume `motus-backups`.
+- Para restaurar, rode `npm run restaurar -- arquivo.json.gz` em `api/`, com `DATABASE_URL` apontando para o banco. Por padrão, só insere o que falta. Com `--substituir`, sobrescreve os registros de mesmo id.
+- Recomendado também: o backup nativo do Railway no volume do Postgres (painel → Postgres → Backups).
+
 ## Publicação no Railway
 
-O app roda como um serviço só: o `Dockerfile` da raiz compila o `web` e a `api`, e a API entrega o front num único endereço HTTPS. O `railway.json` já define o Dockerfile e o healthcheck (`/api/saude`). As migrações rodam sozinhas quando a API inicia.
+O app roda como um serviço só: o `Dockerfile` da raiz compila o `web` e a `api`, e a API entrega o front num único endereço HTTPS. As migrações rodam sozinhas quando a API inicia.
 
-Passo a passo, num projeto próprio (separado do BarberNexa):
+A configuração do serviço fica em `.railway/railway.ts`: Dockerfile, healthcheck em `/api/saude` e o volume de backup. Ela gerencia só o serviço `app`; o banco e as variáveis ficam de fora. Para conferir ou aplicar mudanças, rode `npm install` na raiz e depois `railway config plan` ou `railway config apply`.
+
+Para publicar, extraia uma cópia limpa com `git archive main` para uma pasta e rode `railway up` com essa pasta, `--path-as-root --service app --ci`.
+
+Como o projeto foi montado (separado do BarberNexa):
 
 1. **New Project → Deploy from GitHub repo → `BernardoAbudReis/motus`.** O serviço do app é criado a partir da `main`.
-   O repositório pertence à conta `BernardoAbudReis`. Para o Railway enxergá-lo, o aplicativo **Railway** do GitHub precisa estar instalado nessa conta, com acesso ao `motus`. Quem faz isso é o dono, em GitHub → Settings → Applications. Sem essa instalação, dá para publicar pela CLI: `railway up --service <app> --ci`, a partir de uma cópia limpa da `main`.
+   O repositório pertence à conta `BernardoAbudReis`. Para o Railway enxergá-lo, o aplicativo **Railway** do GitHub precisa estar instalado nessa conta, com acesso ao `motus`. Quem faz isso é o dono, em GitHub → Settings → Applications. Sem essa instalação, dá para publicar pela CLI, como descrito acima.
 2. **+ New → Database → PostgreSQL**, no mesmo projeto.
 3. Em **Variables** do serviço do app:
 

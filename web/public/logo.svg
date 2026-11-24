@@ -1,12 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Símbolo MOTUS redesenhado em vetor a partir de docs/marca/motus-logo-original.png -->
+  <!-- Ícone do app MOTUS redesenhado em vetor a partir de docs/marca/icone-app-referencia.png:
+       anel de progresso (metade branca, metade menta) com o check no centro. -->
+  <defs>
+    <linearGradient id="menta" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5EF0C4"/>
+      <stop offset="1" stop-color="#53E79F"/>
+    </linearGradient>
+  </defs>
   <rect width="512" height="512" rx="112" fill="#090C15"/>
-  <g stroke-linejoin="round" stroke-width="10" transform="translate(-14 0)">
-    <!-- traço em Λ -->
-    <path d="M108 341 L200 169 L242 169 L294 248 L270 301 L225 225 L166 341 Z" fill="#F6F5F6" stroke="#F6F5F6"/>
-    <!-- traço ascendente -->
-    <path d="M248 341 L306 341 L399 169 L340 169 Z" fill="#F6F5F6" stroke="#F6F5F6"/>
-    <!-- traço menta -->
-    <path d="M322 341 L357 341 L407 248 L404 194 Z" fill="#53E79F" stroke="#53E79F"/>
+  <g fill="none" stroke-width="34">
+    <!-- metade concluída à esquerda (branca) -->
+    <path d="M256 111 A145 145 0 0 0 256 401" stroke="#F6F5F6"/>
+    <!-- contorno na cor do fundo: abre o respiro entre a ponta menta e o branco -->
+    <path d="M262 111 A145 145 0 0 1 262 401" stroke="#090C15" stroke-width="48" stroke-linecap="round"/>
+    <!-- metade em progresso à direita (menta) -->
+    <path d="M262 111 A145 145 0 0 1 262 401" stroke="url(#menta)" stroke-linecap="round"/>
+    <!-- check -->
+    <path d="M204 258 L242 297 L322 215" stroke="#F6F5F6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>

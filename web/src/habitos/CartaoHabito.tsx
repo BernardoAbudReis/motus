@@ -42,8 +42,7 @@ export function BotaoAnel({
           transform="rotate(-90 30 30)"
         />
       </svg>
-      <span className="anel-icone">
-        <Icone nome={icone} tamanho={26} preenchido={icone === 'pausa'} />
+{/* Play e pausa são sólidos: menores para ter o mesmo peso visual do + e do check. */}      <span className={`anel-icone ${icone === 'play' ? 'ajuste-play' : ''}`}>        <Icone nome={icone} tamanho={icone === 'play' || icone === 'pausa' ? 20 : 26} espessura={2.4} />
       </span>
     </button>
   )
@@ -98,7 +97,7 @@ export function CartaoHabito({
           <strong>{h.nome}</strong>
           <span className="habito-sub">
             {rodando ? (
-              <span className="cronometro-rodando">⏱ {formatarDuracao(cronometroSeg)}</span>
+              <span className="cronometro-rodando"><Icone nome="cronometro" tamanho={14} /> {formatarDuracao(cronometroSeg)}</span>
             ) : (
               descreverFrequencia(h.frequencia)
             )}

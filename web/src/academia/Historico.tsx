@@ -112,6 +112,9 @@ export function Historico({ sessoes, exercicios }: { sessoes: SessaoTreino[]; ex
   if (lista.length === 0) {
     return (
       <div className="vazio">
+        <span className="vazio-icone" aria-hidden>
+          <Icone nome="grafico" tamanho={30} />
+        </span>
         <p className="vazio-titulo">Nenhum treino finalizado ainda</p>
         <p>Os treinos aparecem aqui ao finalizar, com cada série, peso e repetição.</p>
       </div>

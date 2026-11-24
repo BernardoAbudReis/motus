@@ -133,6 +133,9 @@ function Treinar({
 
       {fichas.length === 0 ? (
         <div className="vazio">
+          <span className="vazio-icone" aria-hidden>
+            <Icone nome="academia" tamanho={30} />
+          </span>
           <p className="vazio-titulo">Monte sua primeira ficha</p>
           <p>
             Escolha os exercícios, as séries, as repetições e o descanso. Hoje é {DIAS_CURTOS[diaHoje].replace('.', '').toLowerCase()}.

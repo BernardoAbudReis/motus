@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useState, type FormEvent } from 'react'
 import { entrar, sair, type Usuario } from '../api'
 import { descreverSync, useEstadoSync } from '../components/IndicadorSync'
+import { Icone } from '../components/Icone'
 import { PassosInstalacao } from '../components/OrientacaoInstalacao'
 import { db } from '../db'
 import { alterarPreferencias, usePreferencias } from '../preferencias'
@@ -43,10 +44,10 @@ function Conta() {
         <p className="sutil">{descreverSync(estado)}</p>
         <div className="linha-botoes">
           <button className="botao" onClick={() => void sincronizar()}>
-            🔄 Sincronizar agora
+            <Icone nome="sincronizar" tamanho={18} /> Sincronizar agora
           </button>
           <button className="botao" onClick={() => void sair()}>
-            Sair
+            <Icone nome="sair" tamanho={18} /> Sair
           </button>
         </div>
       </>
@@ -89,7 +90,9 @@ export function Configuracoes() {
 
   return (
     <section>
-      <h1>Configurações</h1>
+      <header className="topo-pagina simples">
+        <h1>Configurações</h1>
+      </header>
 
       <div className="cartao">
         <h2>Perfil</h2>
@@ -114,7 +117,7 @@ export function Configuracoes() {
               className={prefs.tema === t ? 'ativo' : ''}
               onClick={() => void alterarPreferencias({ tema: t })}
             >
-              {t === 'escuro' ? '🌙 Escuro' : '☀️ Claro'}
+              <Icone nome={t === 'escuro' ? 'lua' : 'sol'} tamanho={18} /> {t === 'escuro' ? 'Escuro' : 'Claro'}
             </button>
           ))}
         </div>

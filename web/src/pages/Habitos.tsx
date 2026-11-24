@@ -201,6 +201,9 @@ export function Habitos() {
             <p>Nenhum hábito arquivado.</p>
           ) : habitos.length === 0 ? (
             <>
+              <span className="vazio-icone" aria-hidden>
+                <Icone nome="habitos" tamanho={30} />
+              </span>
               <p className="vazio-titulo">Comece pelo primeiro hábito</p>
               <p>Pequenas ações repetidas todo dia levam à evolução.</p>
               <button className="botao primario largo" onClick={() => setForm({})}>

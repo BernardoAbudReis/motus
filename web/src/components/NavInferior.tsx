@@ -1,10 +1,12 @@
+import { Icone, type NomeIcone } from './Icone'
+
 export type Aba = 'habitos' | 'academia' | 'estatisticas' | 'configuracoes'
 
-const ABAS: { id: Aba; rotulo: string; icone: string }[] = [
-  { id: 'habitos', rotulo: 'Hábitos', icone: '✅' },
-  { id: 'academia', rotulo: 'Academia', icone: '🏋️' },
-  { id: 'estatisticas', rotulo: 'Estatísticas', icone: '📊' },
-  { id: 'configuracoes', rotulo: 'Configurações', icone: '⚙️' },
+const ABAS: { id: Aba; rotulo: string; icone: NomeIcone }[] = [
+  { id: 'habitos', rotulo: 'Hábitos', icone: 'habitos' },
+  { id: 'academia', rotulo: 'Academia', icone: 'academia' },
+  { id: 'estatisticas', rotulo: 'Estatísticas', icone: 'estatisticas' },
+  { id: 'configuracoes', rotulo: 'Configurações', icone: 'configuracoes' },
 ]
 
 export function NavInferior({ aba, onTrocar }: { aba: Aba; onTrocar: (a: Aba) => void }) {
@@ -17,8 +19,8 @@ export function NavInferior({ aba, onTrocar }: { aba: Aba; onTrocar: (a: Aba) =>
           aria-current={a.id === aba ? 'page' : undefined}
           onClick={() => onTrocar(a.id)}
         >
-          <span className="nav-icone" aria-hidden>
-            {a.icone}
+          <span className="nav-icone">
+            <Icone nome={a.icone} tamanho={22} espessura={a.id === aba ? 2.2 : 1.8} />
           </span>
           <span className="nav-rotulo">{a.rotulo}</span>
         </button>

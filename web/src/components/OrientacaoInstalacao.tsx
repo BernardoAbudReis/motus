@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Icone } from './Icone'
 import {
   ehIOS,
   ehSafariIOS,
@@ -13,12 +14,18 @@ export function PassosInstalacao() {
   const [, forcar] = useState(0)
   useEffect(() => ouvirInstalacao(() => forcar((n) => n + 1)), [])
 
-  if (estaInstalado()) return <p>✅ O app já está instalado neste aparelho.</p>
+  if (estaInstalado()) {
+    return (
+      <p className="linha-icone">
+        <Icone nome="concluido" tamanho={20} /> O app já está instalado neste aparelho.
+      </p>
+    )
+  }
 
   if (podeInstalarDireto()) {
     return (
       <button className="botao primario largo" onClick={() => void instalar()}>
-        📲 Instalar o app
+        <Icone nome="instalar" tamanho={20} /> Instalar o app
       </button>
     )
   }
@@ -31,7 +38,11 @@ export function PassosInstalacao() {
     return (
       <ol className="passos">
         <li>
-          Toque em <strong>Compartilhar</strong> <span aria-hidden>⬆️</span> na barra do Safari.
+          Toque em <strong>Compartilhar</strong>{' '}
+          <span className="icone-inline">
+            <Icone nome="compartilhar" tamanho={16} />
+          </span>{' '}
+          na barra do Safari.
         </li>
         <li>
           Escolha <strong>Adicionar à Tela de Início</strong>.
@@ -83,7 +94,7 @@ export function BannerInstalacao() {
           setVisivel(false)
         }}
       >
-        ✕
+        <Icone nome="fechar" tamanho={18} />
       </button>
     </div>
   )

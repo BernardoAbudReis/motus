@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
+import { Icone } from './Icone'
 
 const UMA_HORA = 60 * 60 * 1000
 
@@ -36,7 +37,7 @@ export function AvisoAtualizacao() {
           Atualizar
         </button>
         <button className="botao-icone" aria-label="Depois" onClick={() => setPrecisaAtualizar(false)}>
-          ✕
+          <Icone nome="fechar" tamanho={18} />
         </button>
       </div>
     )
@@ -47,7 +48,7 @@ export function AvisoAtualizacao() {
       <div className="aviso" role="status">
         <span>Pronto para usar sem internet.</span>
         <button className="botao-icone" aria-label="Fechar" onClick={() => setProntoOffline(false)}>
-          ✕
+          <Icone nome="fechar" tamanho={18} />
         </button>
       </div>
     )

@@ -125,9 +125,24 @@ h2 {
   color: var(--destaque-forte);
 }
 
+/* Ícone da aba numa pílula: a ativa ganha o fundo verde escuro da marca. */
 .nav-icone {
-  font-size: 1.4rem;
-  line-height: 1;
+  width: 3.5rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  transition:
+    background-color var(--rapida),
+    color var(--rapida);
+}
+
+.nav-inferior button.ativa .nav-icone {
+  background: var(--destaque-fundo);
+}
+
+.nav-inferior button.ativa .nav-rotulo {
+  color: var(--texto);
 }
 
 .nav-rotulo {

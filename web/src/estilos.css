@@ -363,6 +363,46 @@ button:focus-visible {
   color: var(--perigo);
 }
 
+/* Tela inicial: criar conta ou entrar antes de usar o app */
+.tela-inicial {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(1.5rem + env(safe-area-inset-top)) 1rem calc(1.5rem + env(safe-area-inset-bottom));
+}
+
+.tela-inicial-conteudo {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: aparecer var(--suave) both;
+}
+
+.tela-inicial-logo {
+  border-radius: 22%;
+}
+
+.tela-inicial h1 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1.9rem;
+  letter-spacing: 0.08em;
+}
+
+.tela-inicial-slogan {
+  color: var(--texto-sutil);
+  margin: 0 0 1.5rem;
+}
+
+.tela-inicial .cartao {
+  text-align: left;
+}
+
+.tela-inicial .cartao h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
 /* Conta, perfil e dados (Configurações) */
 .codigo-recuperacao {
   font-family: ui-monospace, 'SF Mono', Consolas, monospace;

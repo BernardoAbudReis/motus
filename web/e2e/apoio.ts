@@ -20,24 +20,54 @@ export function emailDeTeste(prefixo: string) {
   return `${prefixo}${Date.now()}${Math.random().toString(36).slice(2, 6)}@e2e.teste.local`
 }
 
-export async function adicionarExemplos(page: Page) {
-  await page.goto('/')
-  await page.getByRole('button', { name: /Adicionar exemplos/ }).click()
-  await expect(page.getByText('Fazer a cama')).toBeVisible()
+export interface Credenciais {
+  email: string
+  senha: string
+  codigo: string
 }
 
-/** Cria uma conta pela tela de Configurações. Devolve o e-mail e o código de recuperação mostrado. */
-export async function criarConta(page: Page, senha = 'senha-de-teste-123') {
+/** Cria a conta na tela inicial e confirma o código de recuperação. */
+export async function cadastrar(page: Page, senha = 'senha-de-teste-123'): Promise<Credenciais> {
   const email = emailDeTeste('conta')
-  await page.getByRole('button', { name: 'Configurações' }).click()
-  await page.getByRole('button', { name: 'Criar uma conta' }).click()
+  if (await page.getByRole('button', { name: 'Criar uma conta' }).isVisible()) await page.getByRole('button', { name: 'Criar uma conta' }).click()
+  await page.getByLabel('Como quer ser chamado (opcional)').fill('Teste')
   await page.getByLabel('E-mail').fill(email)
-  await page.getByLabel('Senha', { exact: true }).fill(senha)
+  await page.getByLabel(/^Senha/).fill(senha)
   await page.getByRole('button', { name: 'Criar conta' }).click()
   const codigo = (await page.locator('.codigo-recuperacao').textContent())!.trim()
   await page.getByRole('button', { name: 'Já guardei' }).click()
-  await expect(page.getByText(/Sincronizado às/)).toBeVisible({ timeout: 15_000 })
+  await expect(page.locator('.nav-inferior')).toBeVisible()
   return { email, senha, codigo }
+}
+
+/**
+ * Abre o app no endereço dado. Se aparecer a tela inicial (sem conta),
+ * cria uma conta nova e devolve as credenciais; se já estiver dentro, devolve null.
+ */
+export async function abrirApp(page: Page, destino = '/'): Promise<Credenciais | null> {
+  await page.goto(destino)
+  const tela = page.locator('.tela-inicial')
+  await tela.or(page.locator('.nav-inferior')).first().waitFor()
+  return (await tela.isVisible()) ? cadastrar(page) : null
+}
+
+/** Entra com uma conta existente pela tela inicial (outro aparelho). */
+export async function entrarNaTelaInicial(page: Page, email: string, senha: string) {
+  await page.addInitScript(() => localStorage.setItem('instalacao-dispensada', '1'))
+  await page.goto('/')
+  await page.locator('.tela-inicial').waitFor()
+  if (await page.getByRole('button', { name: 'Já tenho conta' }).isVisible()) await page.getByRole('button', { name: 'Já tenho conta' }).click()
+  await page.getByLabel('E-mail').fill(email)
+  await page.getByLabel('Senha', { exact: true }).fill(senha)
+  await page.getByRole('button', { name: 'Entrar' }).click()
+  await expect(page.locator('.nav-inferior')).toBeVisible()
+}
+
+export async function adicionarExemplos(page: Page) {
+  const credenciais = await abrirApp(page)
+  await page.getByRole('button', { name: /Adicionar exemplos/ }).click()
+  await expect(page.getByText('Fazer a cama')).toBeVisible()
+  return credenciais
 }
 
 /** Lê registros direto do IndexedDB do app. */

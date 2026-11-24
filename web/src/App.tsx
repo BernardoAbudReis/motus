@@ -2,6 +2,8 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { AvisoAtualizacao } from './components/AvisoAtualizacao'
 import { IndicadorSync } from './components/IndicadorSync'
 import { NavInferior, type Aba } from './components/NavInferior'
+import { usePortao } from './conta/portao'
+import { TelaInicial } from './conta/TelaInicial'
 import { BannerInstalacao } from './components/OrientacaoInstalacao'
 import { BarraCronometro } from './habitos/BarraCronometro'
 import { Confetes } from './habitos/Confetes'
@@ -24,6 +26,7 @@ export function App() {
   const [aba, setAba] = useState<Aba>(abaDaUrl)
   const { tema } = usePreferencias()
   const { cron } = useCronometro()
+  const portao = usePortao()
 
   useEffect(() => {
     document.documentElement.dataset.tema = tema
@@ -41,6 +44,17 @@ export function App() {
 
   function trocar(a: Aba) {
     if (a !== aba) location.hash = a
+  }
+
+  // Sem conta conectada, a tela inicial (criar conta / entrar) vem antes do app.
+  if (portao === 'carregando') return null
+  if (portao === 'visitante') {
+    return (
+      <>
+        <TelaInicial />
+        <AvisoAtualizacao />
+      </>
+    )
   }
 
   return (

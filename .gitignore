@@ -11,3 +11,6 @@ docs/referencia-*
 # Playwright
 test-results/
 playwright-report/
+
+# Cache do tsc -b
+*.tsbuildinfo

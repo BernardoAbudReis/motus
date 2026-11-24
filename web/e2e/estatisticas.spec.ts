@@ -1,9 +1,9 @@
-import { expect, test } from './apoio'
+import { abrirApp, expect, test } from './apoio'
 
 test.use({ serviceWorkers: 'block' })
 
 test('estatísticas de hábitos e academia com histórico', async ({ page, erros: _ }) => {
-  await page.goto('/')
+  await abrirApp(page)
   await expect(page.getByText('Comece pelo primeiro hábito')).toBeVisible()
   // 30 dias de histórico: cama todos os dias (sequência), 3 treinos.
   await page.evaluate(async () => {

@@ -1,7 +1,7 @@
-import { expect, test } from './apoio'
+import { abrirApp, expect, test } from './apoio'
 
 test('service worker: abre sem internet e guarda o que é feito offline', async ({ page, context, erros: _ }) => {
-  await page.goto('/')
+  await abrirApp(page)
   await page.evaluate(() => navigator.serviceWorker.ready)
   await page.reload() // a partir daqui a página é controlada pelo service worker
   await context.setOffline(true)
@@ -42,15 +42,8 @@ test('lembretes: ativar, testar e desativar neste aparelho', async ({ page, erro
       return inscricao as PushSubscription
     }
   })
-  await page.goto('/#configuracoes')
+  await abrirApp(page, '/#configuracoes')
   const cartao = page.locator('.cartao', { hasText: 'Notificações e lembretes' })
-  await expect(cartao.getByText(/Entre na sua conta \(acima\)/)).toBeVisible()
-
-  await page.getByRole('button', { name: 'Criar uma conta' }).click()
-  await page.getByLabel('E-mail').fill(`lembrete${Date.now()}@e2e.teste.local`)
-  await page.getByLabel('Senha', { exact: true }).fill('senha-de-teste-123')
-  await page.getByRole('button', { name: 'Criar conta' }).click()
-  await page.getByRole('button', { name: 'Já guardei' }).click()
 
   await page.getByRole('button', { name: 'Ativar lembretes neste aparelho' }).click()
   await expect(cartao.getByText('Lembretes ativados neste aparelho.')).toBeVisible()

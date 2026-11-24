@@ -1,9 +1,9 @@
-import { expect, test } from './apoio'
+import { abrirApp, expect, test } from './apoio'
 
 test.use({ serviceWorkers: 'block' })
 
 test('ficha, treino série a série, histórico com cópia da ficha e evolução', async ({ page, erros: _ }) => {
-  await page.goto('/#academia')
+  await abrirApp(page, '/#academia')
   await page.getByRole('button', { name: 'Criar ficha' }).click()
   const dialogo = page.getByRole('dialog').last()
   await page.getByLabel('Nome', { exact: true }).fill('Treino A')

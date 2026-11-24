@@ -1,3 +1,4 @@
+import { CHAVE_JA_ENTROU } from './conta/portao'
 import { gravarMeta, lerMeta } from './db'
 
 export interface Usuario {
@@ -39,13 +40,14 @@ export async function requisicao<T>(caminho: string, opcoes: RequestInit = {}): 
 async function guardarSessao(token: string, usuario?: Usuario) {
   await gravarMeta('token', token)
   if (usuario) await gravarMeta('usuario', usuario)
+  localStorage.setItem(CHAVE_JA_ENTROU, '1')
 }
 
 /** Entra ou cria a conta. Ao criar, devolve o código de recuperação (mostrado uma única vez). */
-export async function entrar(email: string, senha: string, criarConta: boolean) {
+export async function entrar(email: string, senha: string, criarConta: boolean, nome?: string) {
   const r = await requisicao<{ token: string; usuario: Usuario; codigoRecuperacao?: string }>(
     criarConta ? '/auth/cadastro' : '/auth/login',
-    { method: 'POST', body: JSON.stringify({ email, senha }) },
+    { method: 'POST', body: JSON.stringify({ email, senha, ...(criarConta && nome ? { nome } : {}) }) },
   )
   await guardarSessao(r.token, r.usuario)
   return { usuario: r.usuario, codigoRecuperacao: r.codigoRecuperacao }
